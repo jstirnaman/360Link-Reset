@@ -21,31 +21,32 @@ $j(document).ready(function() { // Wait until the original page loads
 
 	// Put the base URL for your catalog here, set for a title search. (Syntax set for Sierra -
 	// Include the ? )
-	var opacUrl = 'http://library.catalog.gvsu.edu/search/t?';
+	var opacUrl = 'http://voyagercatalog.kumc.edu/Search/Results?type=Title&lookfor=';
 
 	// If you have a consortial catalog in addition to your local OPAC, enter the base URL
 	// here set for a title search (syntax is set for Sierra - include ?)
-	var consortialUrl = 'http://elibrary.mel.org/search/t?'
+	//var consortialUrl = 'http://elibrary.mel.org/search/t?'
 
 	// If you have a consortial catalog, enter the name you want to refer to it as here
-	var consortialName = 'other Michigan libraries';
+	//var consortialName = 'other Michigan libraries';
 
 	// Put the base URL Illiad installation here. An OpenURL will be added for all ILL calls.
 	// Include the ?
-	var illBaseUrl = 'https://gvsu.illiad.oclc.org/illiad/illiad.dll/OpenURL?';
+	//var illBaseUrl = 'https://gvsu.illiad.oclc.org/illiad/illiad.dll/OpenURL?';
+        var illBaseUrl = 'https://illiad.lib.ku.edu/kkp/illiad.dll/openurl?';
 
 	// The troubleshooting email you'd like broken link reports to go to
-	var ermsEmail = 'erms@gvsu.edu';
+	var ermsEmail = 'mharvey@kumc.edu';
 
 	// The short name of your library or school you want to use in dialogs
-	var libraryName = 'GVSU';
+	var libraryName = 'KUMC';
 
 	// Do you want to add a link to the end of the citation to export to RefWorks?
 	// true = yes, false = no
 	var refworksToggle = true;
 
 	// Change this to read whatever 360Link says when your print holdings show up
-	var printLabel = 'Print Journal at GVSU Libraries';
+	var printLabel = 'Print Journal at KUMC Libraries';
 
 	// Do you want to show a tooltip pointing folks to Document Delivery or ILL if they click
 	// on more than 1 full text link? (Usually means broken links)
