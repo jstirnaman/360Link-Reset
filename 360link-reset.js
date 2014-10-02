@@ -32,6 +32,10 @@ $j(document).ready(function() { // Wait until the original page loads
 	// If you have a consortial catalog, enter the name you want to refer to it as here
 	//var consortialName = 'other Michigan libraries';
 
+  // Put the URL for your consultation or appointment service here.
+  // This will be displayed for additional help when there are no matching results.
+  var consultServiceUrl = 'http://guides.library.kumc.edu/RandL'
+  
 	// Put the base URL Illiad installation here. An OpenURL will be added for all ILL calls.
 	// Include the ?
 	//var illBaseUrl = 'https://gvsu.illiad.oclc.org/illiad/illiad.dll/OpenURL?';
@@ -178,21 +182,11 @@ $j(document).ready(function() { // Wait until the original page loads
 
 	var listIll = document.createElement('li');
 	listIll.innerHTML = 'Not available online? <a href="'+illiadLink+'">'+illLabel+'</a>';
-
-	// Build the troubleshooting link
-	  var listProblem = document.createElement('li');
-		if(ermsEmail !== '') {
-	    listProblem.innerHTML = 'Found a problem? <a href="mailto:'+ermsEmail+'?subject=Bad%20Full%20Text%20Link&body=%0A%0AProblem%20URL:%20'+problemUrl+'">Let our crack team of link fixers know</a>!';
-    }
-    if(reportForm !== '') {
-      reportUrl= reportForm + '?url=' + problemUrl;
-      //@TODO Change journal to title in the form and then change it here.
-      reportUrl += '&?journal=' + encodeURI(citationElems["citationTitle"]);
-      reportUrl += '&article=' + encodeURI(citationElems["citationArticle"]);
-      reportUrl += '&year=' + encodeURI(citationElems["citationDate"]);
-      reportUrl += '/' + encodeURI(citationElems["citationVolume"]);
-      listProblem.innerHTML = 'Found a problem? <a href="'+reportUrl+'">' + reportLinkText + '</a>';
-    }
+  
+  listProblem = document.createElement('li')
+  listProblem.innerHTML = ('Found a problem? ')
+  listProblem.appendChild(problemReportLink(citationElems, reportLinkText))
+  
 	// Build the next steps list
 	var nextStepsList = document.createElement('div');
 	var nextStepsUl = document.createElement('ul');
@@ -326,12 +320,22 @@ $j(document).ready(function() { // Wait until the original page loads
 	} else { // No results
 
 		// Create the results DOM object
-		var resultsDiv = document.createElement('div'),noResultsLabel = 'We&#8217re sorry, but this item is not available online. <small style="font-size: .7em !important; font-weight: normal !important;"><i><a href="mailto:' + ermsEmail + '?subject=Bad%20Full%20Text%20Link&body=%0A%0AProblem%20URL:%20'+problemUrl+'">Think this is wrong?</a></i></small>',noResultsButton = '',noResultsButtonLabel = '',noResultsIll = document.createElement('div'),noResultsprc = document.createElement('div');
+		var resultsDiv = document.createElement('div')
+		noResultsLabel = 'We&#8217re sorry, but this item is not available online. '
+		var tmp = document.createElement('div')
+		var noResultsLink = document.createElement('span')
+		noResultsLink.id = "noresults-problem-report-link"
+		noResultsLink.appendChild(problemReportLink(citationElems, 'Think this is wrong?'))
+		tmp.appendChild(noResultsLink)
+		noResultsLabel += tmp.innerHTML
+		noResultsButton = '',noResultsButtonLabel = ''
+		noResultsIll = document.createElement('div')
+		noResultsprc = document.createElement('div')
 		resultsDiv.id = 'ContentNotAvailableTable';
 
 		if(format !== "Journal" && format !== "JournalFormat") { // Requested item is not an article
-			noResultsLabel = 'This item may be available online <a href="http://library.catalog.gvsu.edu/search/t' + titleEncode + '">through our catalog</a>';
-			noResultsButtonLabel = '<a href="http://library.catalog.gvsu.edu/search/t' + titleEncode + '" class="lib-button">Search the catalog</a>';
+			noResultsLabel = 'This item may be available online <a href="' + opacUrl + titleEncode + '">through our catalog</a>';
+			noResultsButtonLabel = '<a href="' + opacUrl + titleEncode + '" class="lib-button">Search the catalog</a>';
 			noResultsButton = document.createElement('p');
 			noResultsButton.innerHTML = noResultsButtonLabel;
 		}
@@ -370,7 +374,7 @@ $j(document).ready(function() { // Wait until the original page loads
 				noResultsprcText.innerHTML = 'Meet with a research consultant to find similar ' + O + 's.'; // Uses term from citation grabber
 			noResultsprc.appendChild(noResultsprcText);
 				var noResultsprcButton = document.createElement('p');
-				noResultsprcButton.innerHTML = '<a href="http://gvsu.edu/library/prc" class="lib-button-grey">Make an Appointment</a>';
+				noResultsprcButton.innerHTML = '<a href="'+consultServiceUrl+'" class="lib-button-grey">Make an Appointment</a>';
 			noResultsprc.appendChild(noResultsprcButton);
 
 		noResultsHelp.appendChild(noResultsIll);
@@ -432,7 +436,9 @@ $j(document).ready(function() { // Wait until the original page loads
 			// Let's show a tooltip highlighting Document Delivery when the user has tried a few sources.
 			var tooltip = document.createElement('li');
 			tooltip.id = 'doc-del-tooltip';
-			tooltip.innerHTML = 'Having trouble? You can order a copy from Document Delivery, and they&#8217;ll get it for you. It&#8217;s free!<br /><a href="'+illiadLink+'" class="lib-button-grey">Order a Copy</a> <span id="cancel-doc-del">No Thanks</span><p style="clear:both;"><i><a href="mailto:'+ermsEmail+'?subject=Bad%20Full%20Text%20Link&body=%0A%0AProblem%20URL:%20'+problemUrl+'" class="doc-del-problem">Found an error? Let us know!</a></i>';
+			tooltip.innerHTML = 'Having trouble? You can order a copy from Document Delivery, and they&#8217;ll get it for you. It&#8217;s free!<br />'
+			tooltip.innerHTML += '<a href="'+illiadLink+'" class="lib-button-grey">Order a Copy</a> <span id="cancel-doc-del">No Thanks</span><p style="clear:both;">'
+			tooltip.innerHTML += '<i><a href="mailto:'+ermsEmail+'?subject=Bad%20Full%20Text%20Link&body=%0A%0AProblem%20URL:%20'+problemUrl+'" class="doc-del-problem">Found an error? Let us know!</a></i>'
 			nextStepsUl.appendChild(tooltip);
 		}
 		nextStepsList.appendChild(nextStepsUl);
@@ -508,7 +514,28 @@ $j(document).ready(function() { // Wait until the original page loads
 
 	} // End page rewrite
 
-
+// Build the troubleshooting link.
+// Use jQuery because it's prettier then extract the DOM element.
+	function problemReportLink(citation, linktext) {
+	  var link = ''
+	  if (ermsEmail !== '' | reportForm !== '') {
+		if(ermsEmail !== '') {
+		   href='"mailto:'+ermsEmail+'?subject=Bad%20Full%20Text%20Link&body=%0A%0AProblem%20URL:%20'+problemUrl
+    }
+    if(reportForm !== '') {
+      href = reportForm + '?url=' + problemUrl;
+      //@TODO Change journal to title in the form and then change it here.
+      href += '&?journal=' + encodeURI(citation["citationTitle"]);
+      href += '&article=' + encodeURI(citation["citationArticle"]);
+      href += '&year=' + encodeURI(citation["citationDate"]);
+      href += '/' + encodeURI(citation["citationVolume"]);
+    }
+    	 link = $j('<a></a>')
+		   link.attr('href', href)
+		   link.text(linktext);
+    }
+    return $j(link).get(0)
+  }
 
 
 });
