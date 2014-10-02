@@ -36,7 +36,7 @@ $j(document).ready(function() { // Wait until the original page loads
         var illBaseUrl = 'https://illiad.lib.ku.edu/kkp/illiad.dll/openurl?';
 
 	// The troubleshooting email you'd like broken link reports to go to
-	var ermsEmail = 'mharvey@kumc.edu';
+	var ermsEmail = 'ejournals@kumc.edu';
 
 	// The short name of your library or school you want to use in dialogs
 	var libraryName = 'KUMC';
@@ -54,28 +54,26 @@ $j(document).ready(function() { // Wait until the original page loads
 	var docDelTooltip = true;
 
 	// Temporary patch to make Illiad requests work - this is custom to the GVSU install
-	var illiadLink = $j("table.CandyWrapper:last a.AnchorButton:contains('Document Delivery')").attr("href");
-
-
+	var illiadLink = $j("table.CandyWrapper:last a.AnchorButton:contains('Login to ILLiad')").attr("href");
 
 	// ************************************************************************************
 	// DON'T EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU ARE DOING!
 	// ************************************************************************************
 	
 	// Ok, let's fix the proxying bug I'm seeing in routing folks to Illiad
-	
-	if(illiadLink.indexOf("ezproxy") > 0) {
-		console.log("Coming from Off-campus, EZProxy is screwing this up.")
-		var illiadParts = illiadLink.split(".ezproxy.gvsu.edu");
-		illiadLink = illiadParts[0] + illiadParts[1];
-	} else {
-		console.log("No EZProxy problem detected.")
-	}
-
+	if(typeof illiadLink == 'object') {
+ 	if(illiadLink.indexOf("ezproxy") > 0) {
+ 		console.log("Coming from Off-campus, EZProxy is screwing this up.")
+ 		var illiadParts = illiadLink.split(".ezproxy.gvsu.edu");
+ 		illiadLink = illiadParts[0] + illiadParts[1];
+ 	} else {
+ 		console.log("No EZProxy problem detected.")
+ 	}
+  }
 	// ACTIVATE MAGIC FAIRY DUST
 
 	// Remove existing styles
-	$j("head").find("link").remove();
+//	$j("head").find("link").remove();
 
 	// Function to grab items from the URL
 
