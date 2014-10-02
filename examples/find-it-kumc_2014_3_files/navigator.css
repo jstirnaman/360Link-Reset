@@ -1,0 +1,92 @@
+@charset "utf-8";
+/* CSS Document */
+/**
+ * KU Navigator
+ this file needs to be cleaned up of unused classes, kcc 01-09-2013
+ */
+#ku-directory {
+position: absolute;
+z-index: 30;
+display: none;
+width: 100%;
+}
+#ku-directory > .content-navigator {
+position: relative;
+display: block;
+width: 1140px;
+padding-top: 20px;
+margin: 0 auto;
+*margin-left: 0;
+background: #fff;
+border-bottom: 6px solid #e8000d;
+}
+
+
+.navigator-row {width: 98%;margin:0 auto;padding:0;clear: both;}
+.col-navigator-left,.col-navigator-middle,.col-navigator-right{
+float: left;
+min-height: 1px; 
+}
+.col-navigator-left {width: 50%; *width: 39%; padding-left: 5em;}
+.col-navigator-middle {width: 25%; *width: 20%; padding-left: .5em;}
+.col-navigator-right {width: 25%; *width: 22%; padding-right: 3em; margin:0;}
+.col-navigator-middle img {margin-top: -6px;}
+
+    .az-list li a{
+        font-family: Courier, 'Courier New', monospace !important;
+        font-size:1.2em;
+        background-color:#efefef;
+        border:1px solid #ccc;
+        padding:.25em .5em;
+        border-radius: 2px;
+    }
+        .az-list li{
+            margin-left: 0;
+            margin-bottom:.5em;
+        }
+
+.content-navigator p{
+	margin-bottom:1.5em;
+}
+
+    
+@media all and (min-width:960px) and (max-width:1199px) {
+	#ku-directory {
+        width: 940px;
+	}
+	#ku-directory > .content-navigator {
+        width: 940px;
+	}
+}
+
+@media all and (min-width:720px) and (max-width:955px) {
+	#ku-directory {
+        width: 700px;
+	}
+	#ku-directory > .content-navigator {
+		position: relative;
+		display: block;
+        width: 700px;
+		padding-top: 20px;
+		margin: 0 auto;
+		*margin-left: 0;
+
+	}
+}
+@media all and (max-width:719px)  {
+	#ku-directory {
+        width: 98%;
+	}
+	#ku-directory > .content-navigator {
+		position: relative;
+		display: block;
+        width: 98%;
+		padding-top: 20px;
+		margin: 0 auto;
+		*margin-left: 0;
+	}
+	.col-navigator-left {display: none;}
+	.col-navigator-middle {width: 49%; *width: 45%; padding-left: 1em;}
+	.col-navigator-right {width: 49%; *width: 45%; padding-right: 1em; margin:0;}
+
+}
