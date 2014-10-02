@@ -8,7 +8,9 @@
 *	Version 3.0
 */
 
-
+/*
+* Author: Jason Stirnaman, jstirnaman@kumc.edu, @jastirn
+*/
 
 // Simplify the noConflict call since 360Link loads Prototype
 window.$j = jQuery.noConflict();
@@ -34,10 +36,15 @@ $j(document).ready(function() { // Wait until the original page loads
 	// Include the ?
 	//var illBaseUrl = 'https://gvsu.illiad.oclc.org/illiad/illiad.dll/OpenURL?';
         var illBaseUrl = 'https://illiad.lib.ku.edu/kkp/illiad.dll/openurl?';
-
+  
 	// The troubleshooting email you'd like broken link reports to go to
-	var ermsEmail = 'ejournals@kumc.edu';
+	var ermsEmail = ''; //'ejournals@kumc.edu';
 
+  // The URL for own problem reporting form if you have one.
+  // This will be appended: //?journal=JAMA+%3A+the+journal+of+the+American+Medical+Association&article=&year=2010///-"';
+  var reportForm = 'http://library.kumc.edu/e-journal-problem-report-form.xml'; 
+  var reportLinkText = 'Let us fix it!';
+  
 	// The short name of your library or school you want to use in dialogs
 	var libraryName = 'KUMC';
 
@@ -92,7 +99,19 @@ $j(document).ready(function() { // Wait until the original page loads
 
 	// Define common variables
 	var problemUrl=encodeURIComponent(document.URL),authorFirst=$j(".given-name").text().trim(),authorLast=$j(".family-name").text().trim(),results="",articleLinkdata=new Array(),journalLinkdata=new Array(),BookLinkdata=new Array(),dateRangedata=new Array(),DatabaseNamedata=new Array(),DatabaseLinkdata=new Array(),clicks=0,refinerlink=$j("#RefinerLink0").find("a").attr("href"),hasPrint=false,newHref,i=0,illLabel='Order a copy from Interlibrary Loan',searchLabel='Search the Library Catalog for this ',query = document.location.search,authorName = authorLast + ', ' + authorFirst;
-
+  
+  // Get citation variables. Trying to make this DRY-er and easier to use in reportForm.
+  var citationElems = {
+		citationTitle : $j("#CitationJournalTitleValue").text() || $j("#CitationBookTitleValue").text() || $j("#CitationDissertationTitleValue").text() || $j("#CitationPatentTitleValue").text() || $j("#CitationUnknownPublicationValue").text(),
+		citationArticle : $j("#CitationJournalArticleValue").text(),
+		citationDate : $j("#CitationJournalDateValue").text() || $j("#CitationBookDateValue").text() || $j("#CitationDissertationDateValue").text() || $j("#CitationPatentInventorDateValue").text() || $j("#CitationUnknownDateValue").text(),
+		citationVolume : $j("#CitationJournalVolumeValue").text(),
+		citationIsn : $j("td#CitationBookISBNValue").text()
+  }
+  for (var el in citationElems) {
+    citationElems[el] = citationElems[el].trim()
+  }
+  
 	// Set variables from citation
 	if (format === "Journal" || format === "JournalFormat") { // Journals
 		var title = $j("#CitationJournalTitleValue").text().trim(),article = $j("#CitationJournalArticleValue").text().trim()+'.',vol = ' ('+$j("#CitationJournalVolumeValue").text().trim()+')',issue = $j("#CitationJournalIssueValue").text().trim()+'.',date = '&nbsp;('+$j("#CitationJournalDateValue").text().trim()+').',pages = ' p.'+$j("#CitationJournalPageValue").text().trim()+'.',standardno = $j("#CitationJournalIssnValue").text().trim(),L="an electronic copy",A="1 &#8211; 3 days",O="article",titleEncode = encodeURI(title),resultsTable=$j("#JournalLinkTable"),illLabel='Order a copy from Document Delivery';
@@ -161,9 +180,19 @@ $j(document).ready(function() { // Wait until the original page loads
 	listIll.innerHTML = 'Not available online? <a href="'+illiadLink+'">'+illLabel+'</a>';
 
 	// Build the troubleshooting link
-	var listProblem = document.createElement('li');
-	listProblem.innerHTML = 'Found a problem? <a href="mailto:'+ermsEmail+'?subject=Bad%20Full%20Text%20Link&body=%0A%0AProblem%20URL:%20'+problemUrl+'">Let our crack team of link fixers know</a>!';
-
+	  var listProblem = document.createElement('li');
+		if(ermsEmail !== '') {
+	    listProblem.innerHTML = 'Found a problem? <a href="mailto:'+ermsEmail+'?subject=Bad%20Full%20Text%20Link&body=%0A%0AProblem%20URL:%20'+problemUrl+'">Let our crack team of link fixers know</a>!';
+    }
+    if(reportForm !== '') {
+      reportUrl= reportForm + '?url=' + problemUrl;
+      //@TODO Change journal to title in the form and then change it here.
+      reportUrl += '&?journal=' + encodeURI(citationElems["citationTitle"]);
+      reportUrl += '&article=' + encodeURI(citationElems["citationArticle"]);
+      reportUrl += '&year=' + encodeURI(citationElems["citationDate"]);
+      reportUrl += '/' + encodeURI(citationElems["citationVolume"]);
+      listProblem.innerHTML = 'Found a problem? <a href="'+reportUrl+'">' + reportLinkText + '</a>';
+    }
 	// Build the next steps list
 	var nextStepsList = document.createElement('div');
 	var nextStepsUl = document.createElement('ul');
