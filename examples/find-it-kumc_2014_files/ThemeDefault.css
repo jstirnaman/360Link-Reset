@@ -1,0 +1,109 @@
+/* Backward-compatible, default CSS */
+
+.SS_CitationTable,
+TABLE.CandyWrapper {
+	width: 75%;
+	position: relative;
+	clear: both;
+}
+
+.SS_CitationTable {
+	margin-top: 7px;	
+	margin-bottom: 7px;
+}
+
+div.doiNumber, div.res, div.cl {
+	font-size: 84%;
+}
+
+TABLE.WideNoBorder
+{ 
+  width: auto;
+  margin-bottom: 7px;
+}
+
+TR.MediumLine TD {
+	width: auto;
+}
+
+TR.MediumLine TD .cl {
+	white-space: nowrap;
+}
+
+TR.LinePadRow { display: none; }
+
+
+.BorderE,
+.BorderW,
+.CornerNW,
+.CornerNE,
+.CornerSW,
+.CornerSE {
+	width:0;
+	height:0;
+}
+
+.BorderN{
+	height:10px;
+	padding:0;
+	vertical-align:top;
+}
+
+.BorderS{
+	/*height:10px;
+	border-bottom: 1px solid #999999 */
+}
+
+H4,
+.ContentHeading,
+.SS_NoResults,
+.CustomLinkGroupLabel,
+.SS_ContentHeading,
+.SS_JournalTitle,
+.SS_BookTitle,
+.SS_IsbnText,
+.SS_IssnText,
+.RefinerLabel,
+.CitationLabel {
+	font-weight: bold;
+}
+
+SPAN.SS_searchTitle {
+	display:inline;
+	font-size:1.1em;
+	font-weight: bold;
+	margin:0;
+}
+
+/*
+  CSS ID definitions
+ */
+
+
+#CrossRefTable { width: 100%; }
+#JournalLinkTable { width: 100%; }
+#CitationJournalIssnValue { width: 10%; }
+
+
+#RefinerLink0 {
+	float:right;
+	margin:0;
+	display: run-in;
+	vertical-align:top
+}
+
+IMG.CellSpacer,
+#RefinerLink1,
+#RefinerLink2,
+#RefinerLink3{
+	display:none;
+}
+
+#SearchResults {
+  display:block; float:left;
+}
+
+#MoreOptions {}
+#OtherSearchOptions {
+  display:none;
+}
