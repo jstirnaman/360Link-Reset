@@ -232,7 +232,7 @@ a.doc-del-problem {
 	font-size: .8em;
 }
 #doc-del-tooltip .lib-button-grey {
-	font-size: 1.2em;
+	font-size: 1em;
 	margin-top: 1.5em;
 	margin-bottom: .5em;
 }
@@ -242,4 +242,9 @@ span#cancel-doc-del {
 	float: right;
 	margin-top: 3em;
 	text-decoration: underline;
+}
+#noresults-problem-report-link {
+  font-size: .7em !important; 
+  font-weight: normal !important;
+  font-style: italic;
 }
