@@ -41,13 +41,24 @@ $j(document).ready(function() { // Wait until the original page loads
 	//var illBaseUrl = 'https://gvsu.illiad.oclc.org/illiad/illiad.dll/OpenURL?';
         var illBaseUrl = 'https://illiad.lib.ku.edu/kkp/illiad.dll/openurl?';
   
+  // ************* Provide help for troubleshooting *************
+  // If ermsEmail is set then mailto: links will be generated that include a subject and the page URL.
+  // Otherwise, if reportForm is set to a URL then a query string will be appended that includes
+  // the page URL and parameters from the citation. It's up to you to design a form
+  // that handles the parameters.
+  
 	// The troubleshooting email you'd like broken link reports to go to
 	var ermsEmail = ''; //'ejournals@kumc.edu';
 
   // The URL for own problem reporting form if you have one.
-  // This will be appended: //?journal=JAMA+%3A+the+journal+of+the+American+Medical+Association&article=&year=2010///-"';
+  // Example of query string that will be appended: 
+  // ?journal=JAMA+%3A+the+journal+of+the+American+Medical+Association&article=&year=2010///-"';
   var reportForm = 'http://library.kumc.edu/e-journal-problem-report-form.xml'; 
+  
+  // Text to display for the email link or the link to your form.
+  // The preceding text is "Found a problem?"
   var reportLinkText = 'Let us fix it!';
+  // ************************************************************
   
 	// The short name of your library or school you want to use in dialogs
 	var libraryName = 'KUMC';
@@ -102,46 +113,83 @@ $j(document).ready(function() { // Wait until the original page loads
 	}
 
 	// Define common variables
-	var problemUrl=encodeURIComponent(document.URL),authorFirst=$j(".given-name").text().trim(),authorLast=$j(".family-name").text().trim(),results="",articleLinkdata=new Array(),journalLinkdata=new Array(),BookLinkdata=new Array(),dateRangedata=new Array(),DatabaseNamedata=new Array(),DatabaseLinkdata=new Array(),clicks=0,refinerlink=$j("#RefinerLink0").find("a").attr("href"),hasPrint=false,newHref,i=0,illLabel='Order a copy from Interlibrary Loan',searchLabel='Search the Library Catalog for this ',query = document.location.search,authorName = authorLast + ', ' + authorFirst;
-  
-  // Get citation variables. Trying to make this DRY-er and easier to use in reportForm.
+	var problemUrl=encodeURIComponent(document.URL),
+	    results="",
+	    articleLinkdata=new Array(), journalLinkdata=new Array(), BookLinkdata=new Array(),
+	    dateRangedata=new Array(),
+	    DatabaseNamedata=new Array(), DatabaseLinkdata=new Array(),
+	    clicks=0,
+	    refinerlink=$j("#RefinerLink0").find("a").attr("href"),
+	    hasPrint=false,
+	    newHref,i=0,
+	    illLabel='Order a copy from Interlibrary Loan',
+	    searchLabel='Search the Library Catalog for this ',
+	    query = document.location.search,
+	    title,
+	    date,
+	    authorName,
+	    standardno,
+	    titleEncode,
+	    resultsTable,
+	    L,
+	    A,
+	    O
+
+  // Get citation variables and put them in an object.
   var citationElems = {
-		citationTitle : $j("#CitationJournalTitleValue").text() || $j("#CitationBookTitleValue").text() || $j("#CitationDissertationTitleValue").text() || $j("#CitationPatentTitleValue").text() || $j("#CitationUnknownPublicationValue").text(),
-		citationArticle : $j("#CitationJournalArticleValue").text(),
-		citationDate : $j("#CitationJournalDateValue").text() || $j("#CitationBookDateValue").text() || $j("#CitationDissertationDateValue").text() || $j("#CitationPatentInventorDateValue").text() || $j("#CitationUnknownDateValue").text(),
-		citationVolume : $j("#CitationJournalVolumeValue").text(),
-		citationIsn : $j("td#CitationBookISBNValue").text()
+	  authorFirst : $j(".given-name").text() || '', 
+	  authorLast : $j(".family-name").text() || $j("td#CitationBookAuthorValue").text() || $j("td#CitationPatentInventorValue").text() || '',    
+		title : $j("#CitationJournalTitleValue").text() || $j("#CitationBookTitleValue").text() || $j("#CitationDissertationTitleValue").text() || $j("#CitationPatentTitleValue").text() || $j("#CitationUnknownPublicationValue").text() || '',
+		atitle : $j("#CitationJournalArticleValue").text(),
+		date : $j("#CitationJournalDateValue").text() || $j("#CitationBookDateValue").text() || $j("#CitationDissertationDateValue").text() || $j("#CitationPatentInventorDateValue").text() || $j("#CitationUnknownDateValue").text() || '',
+		volume : $j("#CitationJournalVolumeValue").text() || '',
+		issue : $j("#CitationJournalIssueValue").text() || '',
+		isn : $j("td#CitationBookISBNValue").text() || '',
+		pages : $j("#CitationJournalPageValue").text() || ''
   }
   for (var el in citationElems) {
     citationElems[el] = citationElems[el].trim()
   }
   
-	// Set variables from citation
+	// Format variables from citation
 	if (format === "Journal" || format === "JournalFormat") { // Journals
-		var title = $j("#CitationJournalTitleValue").text().trim(),article = $j("#CitationJournalArticleValue").text().trim()+'.',vol = ' ('+$j("#CitationJournalVolumeValue").text().trim()+')',issue = $j("#CitationJournalIssueValue").text().trim()+'.',date = '&nbsp;('+$j("#CitationJournalDateValue").text().trim()+').',pages = ' p.'+$j("#CitationJournalPageValue").text().trim()+'.',standardno = $j("#CitationJournalIssnValue").text().trim(),L="an electronic copy",A="1 &#8211; 3 days",O="article",titleEncode = encodeURI(title),resultsTable=$j("#JournalLinkTable"),illLabel='Order a copy from Document Delivery';
+		var article = citationElems["atitle"] ? citationElems["atitle"] + '.' : '',
+		    vol = citationElems["volume"] ? '(' + citationElems["volume"] + ')' : '',
+		    issue = citationElems["issue"] ? citationElems["issue"] + '.' : '',
+		    pages = citationElems["pages"] ? ' p.' + citationElems["pages"] + '.' : '',
+		    L="an electronic copy", A="1 &#8211; 3 days", O="article",
+		    resultsTable=$j("#JournalLinkTable"), 
+		    illLabel='Order a copy from Document Delivery',
+		    authorName = citationElems["authorLast"] ? citationElems["authorLast"] : ''
+		    authorName = citationElems["authorFirst"] ? authorName + ', ' + citationElems["authorFirst"] + '.' : authorName		    
 	}
 	if (format === "BookFormat" || format === "Book") { // Books
-		var title = $j("#CitationBookTitleValue").text().trim(),date = '&nbsp;('+$j("#CitationBookDateValue").text().trim()+').',standardno = $j("td#CitationBookISBNValue").text().trim(),L="this book",A="1 &#8211; 2 weeks",O="book",titleEncode = encodeURI(title),resultsTable=$j("#BookLinkTable"),vol='',issue='',pages='',article='';
+		L="this book", A="1 &#8211; 2 weeks", O="book"
 	}
 	if (format === "Dissertation" || format === "DissertationFormat") { // Dissertations
-		var title = $j("#CitationDissertationTitleValue").text().trim(),date = '&nbsp;('+$j("#CitationDissertationDateValue").text().trim()+').',L="this dissertation",A="1 &#8211; 2 weeks",O="dissertation",titleEncode = encodeURI(title),resultsTable=$j("#BookLinkTable"),vol='',issue='',pages='',article=''; // Encode the white space in the URL
+		L="this dissertation", A="1 &#8211; 2 weeks", O="dissertation"
 	}
 	if (format === "Patent" || format === "PatentFormat") { // Patents
-		var title = $j("#CitationPatentTitleValue").text().trim(),date = '&nbsp;('+$j("#CitationPatentInventorDateValue").text().trim()+').',authorName = $j("td#CitationPatentInventorValue").text().trim(),L="this patent",A="1 &#8211; 2 weeks",O="patent",titleEncode = encodeURI(title),resultsTable=$j("#BookLinkTable"),vol='',issue='',pages='',article='';
+	  L="this patent", A="1 &#8211; 2 weeks", O="patent"
 	}
 	if (format === "UnknownFormat" || format === "Unknown") { // Unknown Format
-		var title = $j("#CitationUnknownPublicationValue").text().trim(),date = '&nbsp;('+$j("#CitationUnknownDateValue").text().trim()+').',standardno=$j("#CitationBookISBNValue").text().trim(),L="this item",A="1 &#8211; 2 weeks",O="item",titleEncode = encodeURI(title),date='',resultsTable=$j("#BookLinkTable"),vol='',issue='',pages='',article='';
-	}
-
+		L="this item", A="1 &#8211; 2 weeks", O="item"
+	}	
+	title = title || citationElems["title"]
+	date = date || citationElems["date"]? '&nbsp;(' + citationElems["date"] + ').' : ''
+  authorName = authorName ? authorName + '.' : ''
+  standardno = standardno || citationElems["isn"]
+  titleEncode = encodeURI(title)
+  resultsTable = resultsTable || $j("#BookLinkTable")
+    
 	// Build OpenURL for document delivery
-	var OpenUrl = 'sid=' + encodeURI(getQueryVariable('rfr_id')) + '&genre='+O+'&aulast='+encodeURI(authorLast)+'&aufirst='+encodeURI(authorFirst)+'&title='+encodeURI(title)+'&date='+encodeURI(	$j("#CitationJournalDateValue").text().trim());
+	var OpenUrl = 'sid=' + encodeURI(getQueryVariable('rfr_id')) + '&genre='+O+'&aulast='+encodeURI(citationElems["authorLast"])+'&aufirst='+encodeURI(citationElems["authorFirst"])+'&title='+encodeURI(title)+'&date='+encodeURI(citationElems["date"]);
 	if(format === "Journal" || format === "JournalFormat") {
-		OpenUrl += '&issn='+standardno+'&atitle='+encodeURI($j("#CitationJournalArticleValue").text().trim())+'&volume='+$j("#CitationJournalVolumeValue").text().trim()+'&part=&issue='+$j("#CitationJournalIssueValue").text().trim();
+		OpenUrl += '&issn='+citationElems["isn"]+'&atitle='+encodeURI(citationElems["atitle"])+'&volume='+citationElems["volume"]+'&part=&issue='+citationElems["issue"];
 	} else {
-		OpenUrl += '&isbn='+standardno+''
+		OpenUrl += '&isbn='+citationElems["isn"]+''
 	}
-	OpenUrl += '&spage='+pages.substr(3).replace(".","")+'&epage=';
-
+	OpenUrl += '&spage='+citationElems["pages"]+'&epage=';
 
 	var newPage = document.createElement('div');
 	newPage.id = 'link-reset-wrapper';
@@ -152,7 +200,13 @@ $j(document).ready(function() { // Wait until the original page loads
 
 	var citationDiv = document.createElement('div');
 	citationDiv.id = 'citation';
-	citationDiv.innerHTML = '<span id="citation-author">'+authorName+'.</span><span id="citation-date">' + date + '</span><span id="citation-article">&nbsp;' + article + '</span> <span id="citation-title">' + title + '.</span>' + vol + issue + pages + '&nbsp;<a href="' + refinerlink + '" class="edit-link">[Edit]</a>';
+	citationDiv.setAttribute("itemscope", '')
+	citationDiv.setAttribute('itemtype', "http://schema.org/CreativeWork")
+	citationDiv.innerHTML = '<span id="citation-author" itemprop="creator" itemscope itemtype="http://schema.org/Person">'+authorName+'</span>'
+	citationDiv.innerHTML += '<span id="citation-date" itemprop="datePublished">' + date + '</span>'
+	citationDiv.innerHTML += '<span id="citation-article" itemprop="headline">&nbsp;' + article + '</span> '
+	citationDiv.innerHTML += '<span id="citation-title" itemprop="name">' + title + '.</span> '
+	citationDiv.innerHTML +=  vol + issue + pages + '&nbsp;<a href="' + refinerlink + '" class="edit-link">[Edit]</a>';
 
 	// Add refworks export link if wanted
 	if(refworksToggle === true) {
@@ -183,7 +237,7 @@ $j(document).ready(function() { // Wait until the original page loads
 	var listIll = document.createElement('li');
 	listIll.innerHTML = 'Not available online? <a href="'+illiadLink+'">'+illLabel+'</a>';
   
-  listProblem = document.createElement('li')
+  var listProblem = document.createElement('li')
   listProblem.innerHTML = ('Found a problem? ')
   listProblem.appendChild(problemReportLink(citationElems, reportLinkText))
   
@@ -525,10 +579,10 @@ $j(document).ready(function() { // Wait until the original page loads
     if(reportForm !== '') {
       href = reportForm + '?url=' + problemUrl;
       //@TODO Change journal to title in the form and then change it here.
-      href += '&?journal=' + encodeURI(citation["citationTitle"]);
-      href += '&article=' + encodeURI(citation["citationArticle"]);
-      href += '&year=' + encodeURI(citation["citationDate"]);
-      href += '/' + encodeURI(citation["citationVolume"]);
+      href += '&?journal=' + encodeURI(citation["title"]);
+      href += '&article=' + encodeURI(citation["article"]);
+      href += '&year=' + encodeURI(citation["date"]);
+      href += '/' + encodeURI(citation["volume"]);
     }
     	 link = $j('<a></a>')
 		   link.attr('href', href)
