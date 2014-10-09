@@ -246,5 +246,9 @@ span#cancel-doc-del {
 #noresults-problem-report-link {
   font-size: .7em !important; 
   font-weight: normal !important;
+  /*
   font-style: italic;
+  */
+    margin-left: 20px;
+
 }
