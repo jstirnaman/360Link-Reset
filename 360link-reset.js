@@ -379,7 +379,7 @@ $j(document).ready(function() { // Wait until the original page loads
 		var tmp = document.createElement('div')
 		var noResultsLink = document.createElement('span')
 		noResultsLink.id = "noresults-problem-report-link"
-		noResultsLink.appendChild(problemReportLink(citationElems, 'Think this is wrong?'))
+		noResultsLink.appendChild(problemReportLink(citationElems, 'Report a problem'))
 		tmp.appendChild(noResultsLink)
 		noResultsLabel += tmp.innerHTML
 		noResultsButton = '',noResultsButtonLabel = ''
@@ -584,7 +584,7 @@ $j(document).ready(function() { // Wait until the original page loads
       href += '&year=' + encodeURI(citation["date"]);
       href += '/' + encodeURI(citation["volume"]);
     }
-    	 link = $j('<a></a>')
+    	 link = $j('<a class="problem-report-link"></a>')
 		   link.attr('href', href)
 		   link.text(linktext);
     }
