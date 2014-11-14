@@ -15,8 +15,9 @@
 // Simplify the noConflict call since 360Link loads Prototype
 window.$j = jQuery.noConflict();
 
-$j(document).ready(function() { // Wait until the original page loads
 
+function threeSixtyLinkReset(myjq) { 
+  var $j = myjq 
 	// ************************************************************************************
 	// Define your institution's local variables here
 	// ************************************************************************************
@@ -590,6 +591,4 @@ $j(document).ready(function() { // Wait until the original page loads
     }
     return $j(link).get(0)
   }
-
-
-});
+}
