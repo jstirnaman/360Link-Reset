@@ -123,8 +123,8 @@ function threeSixtyLinkReset(myjq) {
 	    refinerlink=$j("#RefinerLink0").find("a").attr("href"),
 	    hasPrint=false,
 	    newHref,i=0,
-	    illLabel='Order a copy from Interlibrary Loan',
-	    searchLabel='Search the Library Catalog for this ',
+	    illLabel='Order a copy',
+	    searchLabel='Search the Library Catalog for print',
 	    query = document.location.search,
 	    title,
 	    date,
@@ -139,7 +139,7 @@ function threeSixtyLinkReset(myjq) {
   // Get citation variables and put them in an object.
   var citationElems = {
 	  authorFirst : $j(".given-name").text() || '', 
-	  authorLast : $j(".family-name").text() || $j("td#CitationBookAuthorValue").text() || $j("td#CitationPatentInventorValue").text() || '',    
+	  authorLast : $j(".family-name").text() || $j("td#CitationJournalAuthorValue").text() || $j("td#CitationBookAuthorValue").text() || $j("td#CitationPatentInventorValue").text() || '',    
 		title : $j("#CitationJournalTitleValue").text() || $j("#CitationBookTitleValue").text() || $j("#CitationDissertationTitleValue").text() || $j("#CitationPatentTitleValue").text() || $j("#CitationUnknownPublicationValue").text() || '',
 		atitle : $j("#CitationJournalArticleValue").text(),
 		date : $j("#CitationJournalDateValue").text() || $j("#CitationBookDateValue").text() || $j("#CitationDissertationDateValue").text() || $j("#CitationPatentInventorDateValue").text() || $j("#CitationUnknownDateValue").text() || '',
