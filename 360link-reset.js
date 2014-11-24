@@ -124,7 +124,7 @@ function threeSixtyLinkReset(myjq) {
 	    hasPrint=false,
 	    newHref,i=0,
 	    illLabel='Order a copy',
-	    searchLabel='Search the Library Catalog for print',
+	    searchLabel='Search the Library Catalog for print ',
 	    query = document.location.search,
 	    title,
 	    date,
@@ -160,7 +160,7 @@ function threeSixtyLinkReset(myjq) {
 		    pages = citationElems["pages"] ? ' p.' + citationElems["pages"] + '.' : '',
 		    L="an electronic copy", A="1 &#8211; 3 days", O="article",
 		    resultsTable=$j("#JournalLinkTable"), 
-		    illLabel='Order a copy from Document Delivery',
+		    illLabel = illLabel || 'Order a copy from Document Delivery',
 		    authorName = citationElems["authorLast"] ? citationElems["authorLast"] : ''
 		    authorName = citationElems["authorFirst"] ? authorName + ', ' + citationElems["authorFirst"] + '.' : authorName		    
 	}
