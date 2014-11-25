@@ -178,7 +178,7 @@ function threeSixtyLinkReset(myjq) {
 	}	
 	title = title || citationElems["title"]
 	date = date || citationElems["date"]? '&nbsp;(' + citationElems["date"] + ').' : ''
-  authorName = authorName ? authorName + '.' : ''
+  authorName = authorName ? authorName : ''
   standardno = standardno || citationElems["isn"]
   titleEncode = encodeURI(title)
   resultsTable = resultsTable || $j("#BookLinkTable")
