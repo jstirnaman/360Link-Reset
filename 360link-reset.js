@@ -124,7 +124,7 @@ function threeSixtyLinkReset(myjq) {
 	    hasPrint=false,
 	    newHref,i=0,
 	    illLabel='Order a copy',
-	    searchLabel='Search the Library Catalog for print ',
+	    searchLabel='Search the Library Catalog for a print ',
 	    query = document.location.search,
 	    title,
 	    date,
@@ -178,7 +178,7 @@ function threeSixtyLinkReset(myjq) {
 	}	
 	title = title || citationElems["title"]
 	date = date || citationElems["date"]? '&nbsp;(' + citationElems["date"] + ').' : ''
-  authorName = authorName ? authorName + '.' : ''
+  authorName = authorName ? authorName : ''
   standardno = standardno || citationElems["isn"]
   titleEncode = encodeURI(title)
   resultsTable = resultsTable || $j("#BookLinkTable")
