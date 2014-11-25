@@ -5,7 +5,7 @@
 
 window.$j = jQuery.noConflict();
 
-var sm_survey = '<span class="new_look_activator notice">Please <a href="https://www.surveymonkey.com/s/B86ZFB8" >answer a super-short survey</a> to help us improve FindIt!</a><script src="https://www.surveymonkey.com/jsPop.aspx?sm=kZRAhmGZgnuLQ9rOR5X1KA_3d_3d"> </script></span>'
+var sm_survey = '<span class="new_look_activator notice">Please <a target="_blank" href="https://www.surveymonkey.com/s/B86ZFB8" >answer a super-short survey</a> to help us improve FindIt!</a><script src="https://www.surveymonkey.com/jsPop.aspx?sm=kZRAhmGZgnuLQ9rOR5X1KA_3d_3d"> </script></span>'
 
 $j(document).ready(function() { // Wait until the original page loads
                    activateNewLook($j)
