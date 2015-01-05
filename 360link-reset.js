@@ -24,7 +24,7 @@ function threeSixtyLinkReset(myjq) {
 
 	// Put the base URL for your catalog here, set for a title search. (Syntax set for Sierra -
 	// Include the ? )
-	var opacUrl = 'http://voyagercatalog.kumc.edu/Search/Results?type=Title&lookfor=';
+	var opacUrl = 'http://voyagercatalog.kumc.edu/Search/Results?type=Title&lookfor='
 
 	// If you have a consortial catalog in addition to your local OPAC, enter the base URL
 	// here set for a title search (syntax is set for Sierra - include ?)
@@ -33,15 +33,24 @@ function threeSixtyLinkReset(myjq) {
 	// If you have a consortial catalog, enter the name you want to refer to it as here
 	//var consortialName = 'other Michigan libraries';
 
-  // Put the URL for your consultation or appointment service here.
-  // This will be displayed for additional help when there are no matching results.
-  var consultServiceUrl = 'http://guides.library.kumc.edu/RandL'
+    // Put the URL for your consultation or appointment service here.
+    // This will be displayed for additional help when there are no matching results.
+    var consultServiceUrl = 'http://guides.library.kumc.edu/RandL'
   
 	// Put the base URL Illiad installation here. An OpenURL will be added for all ILL calls.
 	// Include the ?
 	//var illBaseUrl = 'https://gvsu.illiad.oclc.org/illiad/illiad.dll/OpenURL?';
-        var illBaseUrl = 'https://illiad.lib.ku.edu/kkp/illiad.dll/openurl?';
-  
+    var illBaseUrl = 'https://illiad.lib.ku.edu/kkp/illiad.dll/openurl?'
+    
+    // Put the URL for your ILL fee information here.
+    var illFeesUrl='http://library.kumc.edu/illiad-fees'
+    
+    // Put your proxy server base URL for linking to resources here.
+    var proxyBaseUrl = 'https://login.proxy.kumc.edu/login?url='
+    
+    // Put the name of your institution's PubMed otool here. This is used to enable the link to your resolver in PubMed.
+    var pubmedOtool = 'kumclib'
+    
   // ************* Provide help for troubleshooting *************
   // If ermsEmail is set then mailto: links will be generated that include a subject and the page URL.
   // Otherwise, if reportForm is set to a URL then a query string will be appended that includes
@@ -49,16 +58,16 @@ function threeSixtyLinkReset(myjq) {
   // that handles the parameters.
   
 	// The troubleshooting email you'd like broken link reports to go to
-	var ermsEmail = ''; //'ejournals@kumc.edu';
+	var ermsEmail = '' //'ejournals@kumc.edu';
 
   // The URL for own problem reporting form if you have one.
   // Example of query string that will be appended: 
   // ?journal=JAMA+%3A+the+journal+of+the+American+Medical+Association&article=&year=2010///-"';
-  var reportForm = 'http://library.kumc.edu/e-journal-problem-report-form.xml'; 
+  var reportForm = 'http://library.kumc.edu/e-journal-problem-report-form.xml'
   
   // Text to display for the email link or the link to your form.
   // The preceding text is "Found a problem?"
-  var reportLinkText = 'Let us fix it!';
+  var reportLinkText = 'Let us fix it!'
   // ************************************************************
   
 	// The short name of your library or school you want to use in dialogs
@@ -123,8 +132,9 @@ function threeSixtyLinkReset(myjq) {
 	    refinerlink=$j("#RefinerLink0").find("a").attr("href"),
 	    hasPrint=false,
 	    newHref,i=0,
-	    illLabel='Order a copy',
-	    searchLabel='Search the Library Catalog for a print ',
+	    illLabel='Order a copy ',
+        illFeesLabel='Fees may apply',
+	    searchLabel='Search the Catalog for this ',
 	    query = document.location.search,
 	    title,
 	    date,
@@ -140,13 +150,16 @@ function threeSixtyLinkReset(myjq) {
   var citationElems = {
 	  authorFirst : $j(".given-name").text() || '', 
 	  authorLast : $j(".family-name").text() || $j("td#CitationJournalAuthorValue").text() || $j("td#CitationBookAuthorValue").text() || $j("td#CitationPatentInventorValue").text() || '',    
-		title : $j("#CitationJournalTitleValue").text() || $j("#CitationBookTitleValue").text() || $j("#CitationDissertationTitleValue").text() || $j("#CitationPatentTitleValue").text() || $j("#CitationUnknownPublicationValue").text() || '',
-		atitle : $j("#CitationJournalArticleValue").text(),
-		date : $j("#CitationJournalDateValue").text() || $j("#CitationBookDateValue").text() || $j("#CitationDissertationDateValue").text() || $j("#CitationPatentInventorDateValue").text() || $j("#CitationUnknownDateValue").text() || '',
-		volume : $j("#CitationJournalVolumeValue").text() || '',
-		issue : $j("#CitationJournalIssueValue").text() || '',
-		isn : $j("td#CitationBookISBNValue").text() || '',
-		pages : $j("#CitationJournalPageValue").text() || ''
+      title : $j("#CitationJournalTitleValue").text() || $j("#CitationBookTitleValue").text() || $j("#CitationDissertationTitleValue").text() || $j("#CitationPatentTitleValue").text() || $j("#CitationUnknownPublicationValue").text() || '',
+      atitle : $j("#CitationJournalArticleValue").text(),
+      date : $j("#CitationJournalDateValue").text() || $j("#CitationBookDateValue").text() || $j("#CitationDissertationDateValue").text() || $j("#CitationPatentInventorDateValue").text() || $j("#CitationUnknownDateValue").text() || '',
+      volume : $j("#CitationJournalVolumeValue").text() || '',
+      issue : $j("#CitationJournalIssueValue").text() || '',
+      isn : $j("td#CitationBookISBNValue").text() || '',
+      pages : $j("#CitationJournalPageValue").text() || '',
+      doi : $j("#CitationJournalDOIValue").text() || '',
+      pmid : $j("#CitationJournalPMIDValue").text() || ''
+      
   }
   for (var el in citationElems) {
     citationElems[el] = citationElems[el].trim()
@@ -154,34 +167,41 @@ function threeSixtyLinkReset(myjq) {
   
 	// Format variables from citation
 	if (format === "Journal" || format === "JournalFormat") { // Journals
+        format = "Journal"
 		var article = citationElems["atitle"] ? citationElems["atitle"] + '.' : '',
 		    vol = citationElems["volume"] ? '(' + citationElems["volume"] + ')' : '',
 		    issue = citationElems["issue"] ? citationElems["issue"] + '.' : '',
 		    pages = citationElems["pages"] ? ' p.' + citationElems["pages"] + '.' : '',
 		    L="an electronic copy", A="1 &#8211; 3 days", O="article",
-		    resultsTable=$j("#JournalLinkTable"), 
-		    illLabel = illLabel || 'Order a copy from Document Delivery',
+		    resultsTable=$j("#JournalLinkTable"),
 		    authorName = citationElems["authorLast"] ? citationElems["authorLast"] : ''
-		    authorName = citationElems["authorFirst"] ? authorName + ', ' + citationElems["authorFirst"] + '.' : authorName		    
+		    authorName = citationElems["authorFirst"] ? authorName + ', ' + citationElems["authorFirst"] + '.' : authorName
+            doi = citationElems["doi"] ? citationElems["doi"] : 'NA',
+            pmid = citationElems["pmid"] ? citationElems["pmid"] : 'NA',
+            pmLink = pubmedLink(pmid)
 	}
 	if (format === "BookFormat" || format === "Book") { // Books
+        format = "Book"
 		L="this book", A="1 &#8211; 2 weeks", O="book"
 	}
 	if (format === "Dissertation" || format === "DissertationFormat") { // Dissertations
+        format = "Dissertation"
 		L="this dissertation", A="1 &#8211; 2 weeks", O="dissertation"
 	}
 	if (format === "Patent" || format === "PatentFormat") { // Patents
+      format = "Patent"
 	  L="this patent", A="1 &#8211; 2 weeks", O="patent"
 	}
 	if (format === "UnknownFormat" || format === "Unknown") { // Unknown Format
+        format = "Unknown"
 		L="this item", A="1 &#8211; 2 weeks", O="item"
 	}	
 	title = title || citationElems["title"]
-	date = date || citationElems["date"]? '&nbsp;(' + citationElems["date"] + ').' : ''
-  authorName = authorName ? authorName : ''
-  standardno = standardno || citationElems["isn"]
-  titleEncode = encodeURI(title)
-  resultsTable = resultsTable || $j("#BookLinkTable")
+	date = date || citationElems["date"]? citationElems["date"] : ''
+    authorName = authorName ? authorName : ''
+    standardno = standardno || citationElems["isn"]
+    titleEncode = encodeURI(title)
+    resultsTable = resultsTable || $j("#BookLinkTable")
     
 	// Build OpenURL for document delivery
 	var OpenUrl = 'sid=' + encodeURI(getQueryVariable('rfr_id')) + '&genre='+O+'&aulast='+encodeURI(citationElems["authorLast"])+'&aufirst='+encodeURI(citationElems["authorFirst"])+'&title='+encodeURI(title)+'&date='+encodeURI(citationElems["date"]);
@@ -194,7 +214,7 @@ function threeSixtyLinkReset(myjq) {
 
 	var newPage = document.createElement('div');
 	newPage.id = 'link-reset-wrapper';
-	var newPageHeader = document.createElement('h2');
+	var newPageHeader = document.createElement('h1');
 	newPageHeader.style.textAlign = 'left';
 	newPageHeader.innerHTML = 'You are looking for:';
 	newPage.appendChild(newPageHeader);
@@ -203,12 +223,32 @@ function threeSixtyLinkReset(myjq) {
 	citationDiv.id = 'citation';
 	citationDiv.setAttribute("itemscope", '')
 	citationDiv.setAttribute('itemtype', "http://schema.org/CreativeWork")
-	citationDiv.innerHTML = '<span id="citation-author" itemprop="creator" itemscope itemtype="http://schema.org/Person">'+authorName+'</span>'
-	citationDiv.innerHTML += '<span id="citation-date" itemprop="datePublished">' + date + '</span>'
-	citationDiv.innerHTML += '<span id="citation-article" itemprop="headline">&nbsp;' + article + '</span> '
-	citationDiv.innerHTML += '<span id="citation-title" itemprop="name">' + title + '.</span> '
-	citationDiv.innerHTML +=  vol + issue + pages + '&nbsp;<a href="' + refinerlink + '" class="edit-link">[Edit]</a>';
-
+    
+    $j("<div/>").attr("id","citation-article").addClass("itemprop","headline").text(article).appendTo(citationDiv)
+    var citationDetails = $j("<div/>")
+        citationDetails = citationDetails.addClass("citation-details")
+        citationDetails.text("Author: ")
+	var citDet = $j("<span/>").attr("id", "citation-author").attr("itemprop", "creator").attr("itemscope", "")
+        citDet = citDet.attr("itemtype", "http://schema.org/Person")
+        citDet.text(authorName)
+    citationDetails.append(citDet)
+    citationDetails.append(" Date: ")
+    citDet = $j("<span/>").attr("id", "citation-date").attr("itemprop", "datePublished").text(date)
+    citationDetails.append(citDet)
+    $j(citationDiv).append(citationDetails)
+    var citationSrcDiv = document.createElement('div')
+        citationSrcDiv.id = 'citation-source'
+        if (format === "Unknown") {var srcformat = "Source" }
+        else { var srcformat = format }
+        citationSrcDiv.innerHTML += srcformat + ": <span id='citation-title' itemprop='name'>" + title + ".</span> "
+        citationSrcDiv.innerHTML +=  "&nbsp;Volume: <span id='citation-volume'>" + vol + "</span>"
+        citationSrcDiv.innerHTML +=  "&nbsp;Issue: <span id='citation-issue'>" + issue + "</span>"
+        citationSrcDiv.innerHTML += "&nbsp;<span id='citation-pages'>" + pages + "</span>"
+        citationSrcDiv.innerHTML += "<br/>DOI: <span id='citation-doi'>" + doi + "</span>"
+        citationSrcDiv.innerHTML += "&nbsp;PMID: <a rel='alternate' title='View citation in PubMed' href='" + pmLink + "' class='citation'>" + "<span id='citation-pmid'>" + pmid + "</span></a>"
+        citationSrcDiv.innerHTML += "&nbsp;<a href='" + refinerlink + "' class='edit-link'>Edit citation details</a>"
+    $j(citationDetails).append(citationSrcDiv)
+    
 	// Add refworks export link if wanted
 	if(refworksToggle === true) {
 		var refWorksChunk = document.createElement('span');
@@ -235,8 +275,16 @@ function threeSixtyLinkReset(myjq) {
 		listConsortium.innerHTML = '<a href="'+consortialUrl+titleEncode+'">Search '+consortialName+' for this '+O+'</a>';
 	}
 
-	var listIll = document.createElement('li');
-	listIll.innerHTML = 'Not available online? <a href="'+illiadLink+'">'+illLabel+'</a>';
+  var listIll = document.createElement('li')
+    listIll.id = 'next-step-ill'
+    var ill = $j('<a></a>').attr("href", illiadLink)
+    ill = ill.text(illLabel)
+    ill = ill.attr("id", "illLink")
+	listIll.innerHTML = "Not available? "
+    $j(listIll).append(ill)
+    var illfees = $j("<span class='ill-details'></span>")
+    $j("<a/>").attr("href", illFeesUrl).text(illFeesLabel).appendTo(illfees)
+    $j(listIll).append(illfees)
   
   var listProblem = document.createElement('li')
   listProblem.innerHTML = ('Found a problem? ')
@@ -570,25 +618,39 @@ function threeSixtyLinkReset(myjq) {
 	} // End page rewrite
 
 // Build the troubleshooting link.
-// Use jQuery because it's prettier then extract the DOM element.
+// Use jQuery because it's prettier and then extract the DOM element.
 	function problemReportLink(citation, linktext) {
 	  var link = ''
 	  if (ermsEmail !== '' | reportForm !== '') {
 		if(ermsEmail !== '') {
 		   href='"mailto:'+ermsEmail+'?subject=Bad%20Full%20Text%20Link&body=%0A%0AProblem%20URL:%20'+problemUrl
-    }
-    if(reportForm !== '') {
-      href = reportForm + '?url=' + problemUrl;
-      //@TODO Change journal to title in the form and then change it here.
-      href += '&?journal=' + encodeURI(citation["title"]);
-      href += '&article=' + encodeURI(citation["article"]);
-      href += '&year=' + encodeURI(citation["date"]);
-      href += '/' + encodeURI(citation["volume"]);
-    }
-    	 link = $j('<a class="problem-report-link"></a>')
-		   link.attr('href', href)
-		   link.text(linktext);
-    }
+        }
+        if(reportForm !== '') {
+          href = reportForm + '?url=' + problemUrl
+          //@TODO Change journal to title in the form and then change it here.
+          href += '&?journal=' + encodeURI(citation["title"])
+          href += '&article=' + encodeURI(citation["article"])
+          href += '&year=' + encodeURI(citation["date"])
+          href += '/' + encodeURI(citation["volume"])
+        }
+        link = $j('<a class="problem-report-link"/>')
+          link.attr("href", href)
+          link.text(linktext)
+      }
     return $j(link).get(0)
   }
+    function pubmedLink(pmid) {
+        var link = ''
+        if(pmid !== "NA") {
+          link = $j("<a class='citation'/>")
+          href = proxyBaseUrl + "http://www.ncbi.nlm.nih.gov/pubmed/" + pmid
+          href += "?otool=" + pubmedOtool
+          link.attr("href", href)
+          return $j(link).get(0)
+        }
+        else {
+          return link
+        }
+    }
+    
 }
