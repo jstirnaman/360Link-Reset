@@ -168,8 +168,7 @@ p.lib-big-text {
 	margin-top: 2em;
 }
 #top-result,
-#next-step {
-	margin-top: 2em; 
+#next-step { 
 }
 #next-step li {
 	font-size: 1.4em;
@@ -177,7 +176,6 @@ p.lib-big-text {
 }
 #top-result li {
 	font-size: 1.6em;
-	margin-bottom: 1em; 
 }
 ul#top-result,
 .event-body ul,
