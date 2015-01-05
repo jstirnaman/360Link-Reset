@@ -35,7 +35,7 @@ function threeSixtyLinkReset(myjq) {
 
     // Put the URL for your consultation or appointment service here.
     // This will be displayed for additional help when there are no matching results.
-    var consultServiceUrl = 'http://guides.library.kumc.edu/RandL'
+    var consultServiceUrl = "http://guides.library.kumc.edu/RandL"
   
 	// Put the base URL Illiad installation here. An OpenURL will be added for all ILL calls.
 	// Include the ?
@@ -43,7 +43,7 @@ function threeSixtyLinkReset(myjq) {
     var illBaseUrl = 'https://illiad.lib.ku.edu/kkp/illiad.dll/openurl?'
     
     // Put the URL for your ILL fee information here.
-    var illFeesUrl='http://library.kumc.edu/illiad-fees'
+    var illFeesUrl = 'http://library.kumc.edu/illiad-fees'
     
     // Put your proxy server base URL for linking to resources here.
     var proxyBaseUrl = 'https://login.proxy.kumc.edu/login?url='
@@ -200,7 +200,7 @@ function threeSixtyLinkReset(myjq) {
 	date = date || citationElems["date"]? citationElems["date"] : ''
     authorName = authorName ? authorName : ''
     standardno = standardno || citationElems["isn"]
-    titleEncode = encodeURI(title)
+    titleEncode = encodeURIComponent(title)
     resultsTable = resultsTable || $j("#BookLinkTable")
     
 	// Build OpenURL for document delivery
@@ -258,24 +258,25 @@ function threeSixtyLinkReset(myjq) {
 	}
 
 	// Build list element for searching catalog or Google Patents
-	var listOpac = document.createElement('li'),itemType=O;
-	listOpac.id = 'next-step-opac';
-	if(format === "Journal" || format === "JournalFormat") {
-		itemType = 'journal';
-	}
+    var itemType = O
+    itemType = itemType === "article" ? "journal" : itemType
+	var listOpac = document.createElement("li")
+	listOpac.id = "next-step-opac"
+    
 	if(format === "Patent" || format === "PatentFormat") {
 		opacUrl = 'http://www.google.com/?tbm=pts#tbm=pts&q=';
 		searchLabel = 'Search Google Patents for this ';
 	}
-	listOpac.innerHTML = '<a href="'+opacUrl+titleEncode+'">'+searchLabel+itemType+'</a>';
+    opacUrl = opacUrl+titleEncode
+	listOpac.innerHTML = '<a href="'+opacUrl+'">'+searchLabel+itemType+'</a>'
 
 	if(format !== 'Journal' && format !== 'JournalFormat') {
 		// Build consortial link for this item
 		var listConsortium = document.createElement('li');
-		listConsortium.innerHTML = '<a href="'+consortialUrl+titleEncode+'">Search '+consortialName+' for this '+O+'</a>';
+		listConsortium.innerHTML = '<a href="'+consortialUrl+titleEncode+'">Search '+consortialName+' for this '+O+'</a>'
 	}
 
-  var listIll = document.createElement('li')
+    var listIll = document.createElement('li')
     listIll.id = 'next-step-ill'
     var ill = $j('<a></a>').attr("href", illiadLink)
     ill = ill.text(illLabel)
@@ -285,10 +286,18 @@ function threeSixtyLinkReset(myjq) {
     var illfees = $j("<span class='ill-details'></span>")
     $j("<a/>").attr("href", illFeesUrl).text(illFeesLabel).appendTo(illfees)
     $j(listIll).append(illfees)
-  
-  var listProblem = document.createElement('li')
-  listProblem.innerHTML = ('Found a problem? ')
-  listProblem.appendChild(problemReportLink(citationElems, reportLinkText))
+    
+    var listConsult = $j("<li/>")
+    listConsult = listConsult.attr("id", "next-step-consult")
+    listConsult.text(" to find similar " + O + "s")
+    var consult = $j("<a/>")
+    consult.attr("href", consultServiceUrl)
+    consult.text("Meet with a Research Librarian")
+    listConsult.prepend(consult)
+    
+    var listProblem = document.createElement('li')
+    listProblem.innerHTML = ('Found a problem? ')
+    listProblem.appendChild(problemReportLink(citationElems, reportLinkText))
   
 	// Build the next steps list
 	var nextStepsList = document.createElement('div');
@@ -375,7 +384,6 @@ function threeSixtyLinkReset(myjq) {
 			var additionalResultsdiv = document.createElement('div'), onlineResultsdiv = document.createElement('ul'), printResultsdiv = document.createElement('ul'), newResult, newResultLink, newResultLabel, newResultHoldings, printHeading, onlineHeading;
 
 			for(var x = 1; x < results; x++) {
-				console.log(DatabaseNamedata[x].trim());
 				if(DatabaseNamedata[x].trim() === printLabel) { // Item is in print
 					printHeading = document.createElement('h4');
 					printHeading.innerHTML = 'Print';
@@ -436,12 +444,6 @@ function threeSixtyLinkReset(myjq) {
 		noResultsprc = document.createElement('div')
 		resultsDiv.id = 'ContentNotAvailableTable';
 
-		if(format !== "Journal" && format !== "JournalFormat") { // Requested item is not an article
-			noResultsLabel = 'This item may be available online <a href="' + opacUrl + titleEncode + '">through our catalog</a>';
-			noResultsButtonLabel = '<a href="' + opacUrl + titleEncode + '" class="lib-button">Search the catalog</a>';
-			noResultsButton = document.createElement('p');
-			noResultsButton.innerHTML = noResultsButtonLabel;
-		}
 		// Build no results message
 		noResultsMessage = document.createElement('p');
 		noResultsMessage.className = 'lib-big-text';
@@ -450,40 +452,6 @@ function threeSixtyLinkReset(myjq) {
 		if(format !== "Journal" && format !== "JournalFormat") {
 			resultsDiv.appendChild(noResultsButton);
 		}
-		// Make a container to hold the help options
-		var noResultsHelp = document.createElement('div');
-		noResultsHelp.className = 'line';
-
-			// Build help options - first ILL/Document Delivery
-			noResultsIll.className = "span2 unit left";
-				var noResultsIllHeader = document.createElement('h4');
-				noResultsIllHeader.innerHTML = 'Need This Item?';
-			noResultsIll.appendChild(noResultsIllHeader);
-				var noResultsIllText = document.createElement('p');
-				noResultsIllText.style.fontSize = '1em';
-				noResultsIllText.innerHTML = 'We&#8217;ll get you '+L+" in "+A+'.'; // Uses terms from citation grabber
-			noResultsIll.appendChild(noResultsIllText);
-				var noResultsIllButton = document.createElement('p');
-				noResultsIllButton.innerHTML = '<a href="'+illiadLink+'" class="lib-button-grey">Order a Copy</a>';
-			noResultsIll.appendChild(noResultsIllButton);
-
-			// Build help options - second Research Consultants
-			noResultsprc.className = "span2 unit left lastUnit";
-				var noResultsprcHeader = document.createElement('h4');
-				noResultsprcHeader.innerHTML = 'Need Research Help?';
-			noResultsprc.appendChild(noResultsprcHeader);
-				var noResultsprcText = document.createElement('p');
-				noResultsprcText.style.fontSize = '1em';
-				noResultsprcText.innerHTML = 'Meet with a research consultant to find similar ' + O + 's.'; // Uses term from citation grabber
-			noResultsprc.appendChild(noResultsprcText);
-				var noResultsprcButton = document.createElement('p');
-				noResultsprcButton.innerHTML = '<a href="'+consultServiceUrl+'" class="lib-button-grey">Make an Appointment</a>';
-			noResultsprc.appendChild(noResultsprcButton);
-
-		noResultsHelp.appendChild(noResultsIll);
-		noResultsHelp.appendChild(noResultsprc);
-
-		resultsDiv.appendChild(noResultsHelp);
 
 	} // End no results
 
@@ -529,26 +497,18 @@ function threeSixtyLinkReset(myjq) {
 	// Rewrite Serials Solutions terrible page with a nice semantic, clean div full of easy-to-follow markup
 	// So we need to add a div wrapper around the Serials Solutions content to add this HTML into
 
-	var pairvalues = query.split("&");
-	if(pairvalues[0] !== "?SS_Page=refiner") { // This is the citation form. Don't rewrite the page.
-
+	var pairvalues = query.split("&")
+	if(pairvalues[0] !== "?SS_Page=refiner") { // Don't rewrite the citation form page.
+        
 		// Build the next steps list
-		nextStepsUl.appendChild(listIll);
-		nextStepsUl.appendChild(listProblem);
-		if(docDelTooltip === true) { // Show Doc Delivery Tooltip
-			// Let's show a tooltip highlighting Document Delivery when the user has tried a few sources.
-			var tooltip = document.createElement('li');
-			tooltip.id = 'doc-del-tooltip';
-			tooltip.innerHTML = 'Having trouble? You can order a copy from Document Delivery, and they&#8217;ll get it for you. It&#8217;s free!<br />'
-			tooltip.innerHTML += '<a href="'+illiadLink+'" class="lib-button-grey">Order a Copy</a> <span id="cancel-doc-del">No Thanks</span><p style="clear:both;">'
-			tooltip.innerHTML += '<i><a href="mailto:'+ermsEmail+'?subject=Bad%20Full%20Text%20Link&body=%0A%0AProblem%20URL:%20'+problemUrl+'" class="doc-del-problem">Found an error? Let us know!</a></i>'
-			nextStepsUl.appendChild(tooltip);
-		}
-		nextStepsList.appendChild(nextStepsUl);
+		nextStepsUl.appendChild(listIll)
+        nextStepsUl.appendChild($j(listConsult).get(0))
+		nextStepsUl.appendChild(listProblem)
+		nextStepsList.appendChild(nextStepsUl)
 
-		newPage.appendChild(citationDiv);
-		newPage.appendChild(resultsDiv);
-		newPage.appendChild(nextStepsList);
+		newPage.appendChild(citationDiv)
+		newPage.appendChild(resultsDiv)
+		newPage.appendChild(nextStepsList)
 
 		// Add a clear div to reset all floats at the bottom before the footer starts
 		newPageClear = document.createElement('div');
@@ -592,28 +552,6 @@ function threeSixtyLinkReset(myjq) {
 			    jQuery(".event-head").text('Hide Additional Results');
 			    }
 		});
-
-		if(docDelTooltip === true) {
-			// Hide the tooltip for now
-			var docDelObject = document.getElementById('doc-del-tooltip');
-			docDelObject.style.display = 'none';
-
-			// User has hidden the document delivery tooltip
-			$j("#cancel-doc-del").click(function() {
-				docDelObject.style.display = 'none';
-				clicks = 0;
-			});
-			console.log(clicks);
-
-			// Let's count clicks to see when to show the document delivery tooltip
-			$j("#search-results").find("li").find("a").click(function() {
-				clicks++;
-				console.log(clicks);
-				if(clicks > 1) {
-					docDelObject.style.display = 'block';
-				}
-			});
-		} // End doc del tooltip behavior code
 
 	} // End page rewrite
 
