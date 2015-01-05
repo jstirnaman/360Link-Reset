@@ -34,11 +34,20 @@ table, table tr, table td {
 	border: none;
 }
 #CitationResults,
-#citation
+#citation-article
  {
 	font-size: 1.1em;
 	line-height: 1.5em;
-} 
+}
+.citation-details {
+    font-size: 95%;
+    color: #008444;
+    word-spacing: 10px
+}
+.citation-details span, .citation-details a {
+    word-spacing: 0;
+}
+
 td.CitationValue div {
 	font-weight: normal;
 }
@@ -142,15 +151,17 @@ a.SS_DatabaseHyperLink {
 }
 #citation {
 	margin-bottom: 1.5em;
-	font-size: 1.4em;
+	font-size: 1.1em;
 }
-.edit-link {
+/*
+.edit-link
 	background: transparent url(img/pencil.png) top left no-repeat;
 	border: 0;
 	display: inline-block;
-	padding: 0 .5em;
+	padding: 0 1.5em;
 	text-indent: -9999px;
 }
+*/
 p.lib-big-text { 
 	font-size: 120%;
 	font-weight: bold;
@@ -181,22 +192,23 @@ ul#top-result,
 #next-step {
 	border-top: 1px solid #ddd; 
 }
-span.holding-details {
+span.holding-details, span.ill-details, .edit-link {
 	color: #575757 !important;
-	display: inline-block;
+	/*display: inline-block;*/
 	font-size: 12px !important;
 	text-decoration: underline;
 	font-weight: normal !important;
 	cursor: pointer;
+    padding: 0 1em
 }
 .event-head {
 	color: #1F65A0;
-	font-size: 1.4em;
+	font-size: 1em;
 	cursor: pointer;
 	margin: .8em 0; 
 }
 .event-body ul li {
-	font-size: 1.3em;
+	font-size: 1em;
 }
 .event-body ul li a {
 	text-decoration: none;
