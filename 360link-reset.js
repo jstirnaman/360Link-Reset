@@ -245,7 +245,7 @@ function threeSixtyLinkReset(myjq) {
         citationSrcDiv.innerHTML +=  "&nbsp;Issue: <span id='citation-issue'>" + issue + "</span>"
         citationSrcDiv.innerHTML += "&nbsp;<span id='citation-pages'>" + pages + "</span>"
         citationSrcDiv.innerHTML += "<br/>DOI: <span id='citation-doi'>" + doi + "</span>"
-        citationSrcDiv.innerHTML += "&nbsp;PMID: <a rel='alternate' title='View citation in PubMed' href='" + pmLink + "' class='citation'>" + "<span id='citation-pmid'>" + pmid + "</span></a>"
+        citationSrcDiv.innerHTML += "&nbsp;PMID: " + pmLink.outerHTML
         citationSrcDiv.innerHTML += "&nbsp;<a href='" + refinerlink + "' class='edit-link'>Edit citation details</a>"
     $j(citationDetails).append(citationSrcDiv)
     
@@ -578,17 +578,23 @@ function threeSixtyLinkReset(myjq) {
     return $j(link).get(0)
   }
     function pubmedLink(pmid) {
-        var link = ''
+        var href = '', link = '', span = ''
+          span = $j("<span/>")
+          span.text(pmid)
         if(pmid !== "NA") {
-          link = $j("<a class='citation'/>")
           href = proxyBaseUrl + "http://www.ncbi.nlm.nih.gov/pubmed/" + pmid
           href += "?otool=" + pubmedOtool
+          link = $j("<a/>")
           link.attr("href", href)
-          return $j(link).get(0)
+          link.attr("rel", "alternate")
+          link.attr("title", "View citation in PubMed")
+          span.addClass("citation-pmid")
+          link.append(span)
         }
         else {
-          return link
+          link = span
         }
+         return link.get(0)
     }
     
 }
