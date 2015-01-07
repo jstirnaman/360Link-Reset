@@ -357,11 +357,13 @@ function threeSixtyLinkReset(myjq) {
 		topResultdiv.id = 'top-result';
 		topResult.innerHTML = '<a href="' + buttonLink + '" class="article-button" target="_blank">' + buttonText + '</a> in <a href="' + DatabaseLinkdata[0] + '" class="SS_DatabaseHyperLink">' + DatabaseNamedata[0].trim() + '</a>';
 		if(format === "Journal" || format === "JournalFormat") {
-			topResultTrigger.className = 'holding-details';
-			topResultTrigger.innerHTML = 'Details';
-			topResult.appendChild(topResultTrigger);
-			topResultMore.className = 'tooltip';
-			topResultMore.innerHTML = '<i>Dates covered: </i>' + dateRangedata[0] + ' <a href="' + journalLinkdata[0] + '" class="journal-button">Browse Journal</a>';
+			topResultTrigger.className = 'holding-details'
+			topResultTrigger.innerHTML = 'Details'
+			topResult.appendChild(topResultTrigger)
+			topResultMore.className = 'tooltip'
+			topResultMore.innerHTML = '<i>Dates covered: </i>' + dateRangedata[0] + ' <a href="' + journalLinkdata[0] + '" class="journal-button">Browse Journal</a>'
+            citationElems["artnum"] = encodeURI(buttonLink)
+            topResultMore.appendChild(problemReportLink(citationElems, 'Report a problem'))
 			topResult.appendChild(topResultMore);
 		}
 		topResultdiv.appendChild(topResult);
@@ -405,26 +407,29 @@ function threeSixtyLinkReset(myjq) {
 					newResult.innerHTML = '<a href="' + newResultLink + '" target="_blank">' + newResultLabel + '</a> in <a href="' + DatabaseLinkdata[x] + '" class="SS_DatabaseHyperLink">' + DatabaseNamedata[x] + '</a> <span class="holding-details">Details</span>';
 					newResultHoldings = document.createElement('div');
 					newResultHoldings.className = 'tooltip';
-					newResultHoldings.innerHTML = '<i>Dates covered: </i>' + dateRangedata[x] + ' <a href="' + journalLinkdata[x] + '" class="journal-button">Browse Journal</a>';
-					newResult.appendChild(newResultHoldings);
-					onlineResultsdiv.appendChild(newResult);
+					newResultHoldings.innerHTML = '<i>Dates covered: </i>' + dateRangedata[x] + ' <a href="' + journalLinkdata[x] + '" class="journal-button">Browse Journal</a>'
+                    citationElems["artnum"] = encodeURI(newResultLink)
+                    newResultHoldings.appendChild(problemReportLink(citationElems, 'Report a problem'))
+					newResult.appendChild(newResultHoldings)
+					onlineResultsdiv.appendChild(newResult)
 				} // End item online loop
 			} // End for loop
 
-			var additionalResultsDiv = document.createElement('div');
-			additionalResultsDiv.className = 'event-body';
+			var additionalResultsDiv = $j("<div/>")
+			additionalResultsDiv.addClass("event-body")
+            additionalResultsDiv.addClass("more-results")
 
 				if(typeof onlineHeading !== 'undefined') {
-					additionalResultsDiv.appendChild(onlineHeading);
-					additionalResultsDiv.appendChild(onlineResultsdiv);
+					additionalResultsDiv.append(onlineHeading)
+					additionalResultsDiv.append(onlineResultsdiv)
 				}
 				if(typeof printHeading !== 'undefined') {
-					additionalResultsDiv.appendChild(printHeading);
-					additionalResultsDiv.appendChild(printResultsdiv);
+					additionalResultsDiv.append(printHeading)
+					additionalResultsDiv.append(printResultsdiv)
 				}
 
-			resultsDiv.appendChild(additionalResultsTrigger);
-			resultsDiv.appendChild(additionalResultsDiv);
+			$j(resultsDiv).append(additionalResultsTrigger)
+			$j(resultsDiv).append(additionalResultsDiv)
 
 		} // End additional results loop
 
@@ -566,10 +571,11 @@ function threeSixtyLinkReset(myjq) {
         if(reportForm !== '') {
           href = reportForm + '?url=' + problemUrl
           //@TODO Change journal to title in the form and then change it here.
-          href += '&?journal=' + encodeURI(citation["title"])
-          href += '&article=' + encodeURI(citation["article"])
-          href += '&year=' + encodeURI(citation["date"])
-          href += '/' + encodeURI(citation["volume"])
+          href += '&?journal=' + encodeURIComponent(citation["title"])
+          href += '&article=' + encodeURIComponent(citation["atitle"])
+          href += '&year=' + encodeURIComponent(citation["date"])
+          href += '/' + encodeURIComponent(citation["volume"])
+          href += '&url=' + encodeURIComponent(citation["artnum"])
         }
         link = $j('<a class="problem-report-link"/>')
           link.attr("href", href)

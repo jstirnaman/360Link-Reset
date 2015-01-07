@@ -88,7 +88,7 @@ a.journal-button {
 	display: inline-block;
 	padding: 6px 15px; 
 	text-align: center; 
-	text-decoration: none; 
+	text-decoration: none !important;
 	-webkit-border-radius: 4px; 
 	-moz-border-radius: 4px; 
 	khtml-border-radius: 4px; 
@@ -190,12 +190,11 @@ ul#top-result,
 #next-step {
 	border-top: 1px solid #ddd; 
 }
-span.holding-details, span.ill-details, .edit-link {
+span.holding-details, .ill-details a, .edit-link {
 	color: #575757 !important;
 	/*display: inline-block;*/
 	font-size: 12px !important;
-	text-decoration: underline;
-	font-weight: normal !important;
+	text-decoration: underline !important;
 	cursor: pointer;
     padding: 0 1em
 }
@@ -210,7 +209,6 @@ span.holding-details, span.ill-details, .edit-link {
 }
 .event-body ul li a {
 	text-decoration: none;
-	font-weight: bold; 
 }
 .event-body h4 {
 	background: #ddd;
@@ -222,6 +220,9 @@ span.holding-details, span.ill-details, .edit-link {
 	font-size: .8em;
 	padding: 1em 3%;
 	width: 94%;
+}
+.more-results .tooltip {
+    font-size: 1em;
 }
 #doc-del-tooltip{
 	background-color:#0065A4;
@@ -253,21 +254,17 @@ span#cancel-doc-del {
 	margin-top: 3em;
 	text-decoration: underline;
 }
-#noresults-problem-report-link {
-  font-size: .7em !important; 
-  font-weight: normal !important;
-  /*
-  font-style: italic;
-  */
+.tooltip .problem-report-link {
+    font-size: 14px !important;
+    font-weight: normal !important;
     margin-left: 20px;
-
 }
 
 /* ############## Additional styles not specific to 360LinkReset ################### */
 .notice {
     border: solid 4px #DAD6CB;
     background-color: #FFC82D;
-		font-weight: bold;
-		width: 100%;
-		padding: 5px;
+    font-weight: bold;
+    width: 100%;
+    padding: 5px;
   }
