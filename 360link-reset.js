@@ -432,6 +432,7 @@ function threeSixtyLinkReset(myjq) {
 			$j(resultsDiv).append(additionalResultsDiv)
 
 		} // End additional results loop
+                $j(resultsDiv).append($j(".SS_ALTermsOfUse"))
 
 	} else { // No results
 
