@@ -247,15 +247,19 @@ function threeSixtyLinkReset(myjq) {
         citationSrcDiv.innerHTML += "<br/>DOI: <span id='citation-doi'>" + doi + "</span>"
         citationSrcDiv.innerHTML += "&nbsp;PMID: " + pmLink.outerHTML
         citationSrcDiv.innerHTML += "&nbsp;<a href='" + refinerlink + "' class='edit-link'>Edit citation details</a>"
-    $j(citationDetails).append(citationSrcDiv)
-    
 	// Add refworks export link if wanted
 	if(refworksToggle === true) {
 		var refWorksChunk = document.createElement('span');
 		refWorksChunk.id = 'refworks-export';
 		refWorksChunk.innerHTML = '<a id="refworks" href="http://www.refworks.com/express/expressimport.asp?' + OpenUrl + '">Export to Refworks</a></div>';
 		citationDiv.appendChild(refWorksChunk);
-	}
+	} else {
+          $j(citationSrcDiv).append($j("span.SSALItemEmail"))
+          $j(citationSrcDiv).append($j("span.SSALItemExport"))
+        }
+    $j(citationDetails).append(citationSrcDiv)
+    
+
 
 	// Build list element for searching catalog or Google Patents
     var itemType = O
@@ -348,17 +352,20 @@ function threeSixtyLinkReset(myjq) {
 				buttonText += ' Online';
 			}
 		}
-
+                var termsOfUse = $j(".SS_ALTermsOfUse")
 		// Create the results DOM object
 		var resultsDiv = document.createElement('div');
 		resultsDiv.id = 'search-results';
 
-		var topResult = document.createElement('li'),topResultdiv = document.createElement('ul'),topResultMore = document.createElement('div'),topResultTrigger=document.createElement('span');
-		topResultdiv.id = 'top-result';
-		topResult.innerHTML = '<a href="' + buttonLink + '" class="article-button" target="_blank">' + buttonText + '</a> in <a href="' + DatabaseLinkdata[0] + '" class="SS_DatabaseHyperLink">' + DatabaseNamedata[0].trim() + '</a>';
+		var topResult = document.createElement('li')
+                    topResultdiv = document.createElement('ul')
+                    topResultMore = document.createElement('div')
+                    topResultTrigger = document.createElement('a')
+		    topResultdiv.id = 'top-result'
+		    topResult.innerHTML = '<a href="' + buttonLink + '" class="article-button" target="_blank">' + buttonText + '</a> in <a href="' + DatabaseLinkdata[0] + '" class="SS_DatabaseHyperLink">' + DatabaseNamedata[0].trim() + '</a>';
 		if(format === "Journal" || format === "JournalFormat") {
 			topResultTrigger.className = 'holding-details'
-			topResultTrigger.innerHTML = 'Details'
+                        topResultTrigger.innerHTML = 'Details'
 			topResult.appendChild(topResultTrigger)
 			topResultMore.className = 'tooltip'
 			topResultMore.innerHTML = '<i>Dates covered: </i>' + dateRangedata[0] + ' <a href="' + journalLinkdata[0] + '" class="journal-button">Browse Journal</a>'
@@ -404,7 +411,7 @@ function threeSixtyLinkReset(myjq) {
 						newResultLink = articleLinkdata[x];
 						newResultLabel = 'Full Text Online';
 					}
-					newResult.innerHTML = '<a href="' + newResultLink + '" target="_blank">' + newResultLabel + '</a> in <a href="' + DatabaseLinkdata[x] + '" class="SS_DatabaseHyperLink">' + DatabaseNamedata[x] + '</a> <span class="holding-details">Details</span>';
+					newResult.innerHTML = '<a href="' + newResultLink + '" target="_blank">' + newResultLabel + '</a> in <a href="' + DatabaseLinkdata[x] + '" class="SS_DatabaseHyperLink">' + DatabaseNamedata[x] + '</a> <span class="holding-details"></span>';
 					newResultHoldings = document.createElement('div');
 					newResultHoldings.className = 'tooltip';
 					newResultHoldings.innerHTML = '<i>Dates covered: </i>' + dateRangedata[x] + ' <a href="' + journalLinkdata[x] + '" class="journal-button">Browse Journal</a>'
@@ -432,7 +439,7 @@ function threeSixtyLinkReset(myjq) {
 			$j(resultsDiv).append(additionalResultsDiv)
 
 		} // End additional results loop
-                $j(resultsDiv).append($j(".SS_ALTermsOfUse"))
+                $j(resultsDiv).append(termsOfUse)
 
 	} else { // No results
 
@@ -535,7 +542,7 @@ function threeSixtyLinkReset(myjq) {
 			$j('.tooltip').hide();
 
 			// Show or hide tooltip if holding details is clicked on
-			$j('span.holding-details').click(function() {
+			$j('a.holding-details').click(function() {
 				$j(this).next('.tooltip').toggle();
 				var currentLabel = $j(this).text();
 				if(currentLabel === "Details") {

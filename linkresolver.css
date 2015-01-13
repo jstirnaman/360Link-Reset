@@ -153,7 +153,7 @@ a.SS_DatabaseHyperLink {
 	margin-bottom: 1.5em;
 	font-size: 1.1em;
 }
-/*
+/* Pencil edit icon instead of text:
 .edit-link
 	background: transparent url(img/pencil.png) top left no-repeat;
 	border: 0;
@@ -190,12 +190,9 @@ ul#top-result,
 #next-step {
 	border-top: 1px solid #ddd; 
 }
-span.holding-details, .ill-details a, .edit-link {
-	color: #575757 !important;
-	/*display: inline-block;*/
-	font-size: 12px !important;
-	text-decoration: underline !important;
-	cursor: pointer;
+a.holding-details, .ill-details a, .edit-link, .SSALItemEmail a, .SSALItemExport a {
+    font-size: 12px !important;
+    cursor: pointer;
     padding: 0 1em
 }
 .event-head {
