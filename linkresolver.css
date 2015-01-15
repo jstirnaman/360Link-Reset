@@ -251,7 +251,7 @@ span#cancel-doc-del {
 	margin-top: 3em;
 	text-decoration: underline;
 }
-.tooltip .problem-report-link {
+a.problem-report-link {
     font-size: 14px !important;
     font-weight: normal !important;
     margin-left: 20px;

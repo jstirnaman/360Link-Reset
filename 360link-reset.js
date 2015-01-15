@@ -16,8 +16,8 @@
 window.$j = jQuery.noConflict();
 
 
-function threeSixtyLinkReset(myjq) { 
-  var $j = myjq 
+function threeSixtyLinkReset(myjq) {
+  var $j = myjq
 	// ************************************************************************************
 	// Define your institution's local variables here
 	// ************************************************************************************
@@ -36,40 +36,40 @@ function threeSixtyLinkReset(myjq) {
     // Put the URL for your consultation or appointment service here.
     // This will be displayed for additional help when there are no matching results.
     var consultServiceUrl = "http://guides.library.kumc.edu/RandL"
-  
+
 	// Put the base URL Illiad installation here. An OpenURL will be added for all ILL calls.
 	// Include the ?
 	//var illBaseUrl = 'https://gvsu.illiad.oclc.org/illiad/illiad.dll/OpenURL?';
     var illBaseUrl = 'https://illiad.lib.ku.edu/kkp/illiad.dll/openurl?'
-    
+
     // Put the URL for your ILL fee information here.
     var illFeesUrl = 'http://library.kumc.edu/illiad-fees'
-    
+
     // Put your proxy server base URL for linking to resources here.
     var proxyBaseUrl = 'https://login.proxy.kumc.edu/login?url='
-    
+
     // Put the name of your institution's PubMed otool here. This is used to enable the link to your resolver in PubMed.
     var pubmedOtool = 'kumclib'
-    
+
   // ************* Provide help for troubleshooting *************
   // If ermsEmail is set then mailto: links will be generated that include a subject and the page URL.
   // Otherwise, if reportForm is set to a URL then a query string will be appended that includes
   // the page URL and parameters from the citation. It's up to you to design a form
   // that handles the parameters.
-  
+
 	// The troubleshooting email you'd like broken link reports to go to
 	var ermsEmail = '' //'ejournals@kumc.edu';
 
   // The URL for own problem reporting form if you have one.
-  // Example of query string that will be appended: 
+  // Example of query string that will be appended:
   // ?journal=JAMA+%3A+the+journal+of+the+American+Medical+Association&article=&year=2010///-"';
   var reportForm = 'http://library.kumc.edu/e-journal-problem-report-form.xml'
-  
+
   // Text to display for the email link or the link to your form.
   // The preceding text is "Found a problem?"
   var reportLinkText = 'Let us fix it!'
   // ************************************************************
-  
+
 	// The short name of your library or school you want to use in dialogs
 	var libraryName = 'KUMC';
 
@@ -91,7 +91,7 @@ function threeSixtyLinkReset(myjq) {
 	// ************************************************************************************
 	// DON'T EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU ARE DOING!
 	// ************************************************************************************
-	
+
 	// Ok, let's fix the proxying bug I'm seeing in routing folks to Illiad
 	if(typeof illiadLink == 'object') {
  	if(illiadLink.indexOf("ezproxy") > 0) {
@@ -148,7 +148,7 @@ function threeSixtyLinkReset(myjq) {
 
   // Get citation variables and put them in an object.
   var citationElems = {
-	  authorFirst : $j(".given-name").text() || '', 
+	  authorFirst : $j(".given-name").text() || '',
 	  authorLast : $j(".family-name").text() || $j("td#CitationJournalAuthorValue").text() || $j("td#CitationBookAuthorValue").text() || $j("td#CitationPatentInventorValue").text() || '',    
       title : $j("#CitationJournalTitleValue").text() || $j("#CitationBookTitleValue").text() || $j("#CitationDissertationTitleValue").text() || $j("#CitationPatentTitleValue").text() || $j("#CitationUnknownPublicationValue").text() || '',
       atitle : $j("#CitationJournalArticleValue").text(),
@@ -159,19 +159,30 @@ function threeSixtyLinkReset(myjq) {
       pages : $j("#CitationJournalPageValue").text() || '',
       doi : $j("#CitationJournalDOIValue").text() || '',
       pmid : $j("#CitationJournalPMIDValue").text() || ''
-      
   }
   for (var el in citationElems) {
     citationElems[el] = citationElems[el].trim()
   }
-  
+
+  // Build OpenURL for document delivery
+  var OpenUrl = 'sid=' + encodeURIComponent(getQueryVariable('rfr_id'))
+      OpenUrl += 'rft_id=info:doi/' + encodeURI(citationElems["doi"])
+      OpenUrl += 'rft_id=info:pmid/' + encodeURI(citationElems["pmid"])
+      OpenUrl += '&genre='+O+'&aulast='+encodeURIComponent(citationElems["authorLast"])
+      OpenUrl += '&aufirst='+encodeURIComponent(citationElems["authorFirst"]) + '&title='+encodeURIComponent(citationElems["title"])
+      OpenUrl += '&pages='+encodeURIComponent(citationElems["pages"])
+      OpenUrl += '&date='+encodeURIComponent(citationElems["date"])
+  if(format === "Journal" || format === "JournalFormat") {
+    OpenUrl += '&issn='+encodeURIComponent(citationElems["isn"])+'&atitle='+encodeURIComponent(citationElems["atitle"])
+    OpenUrl += '&volume='+encodeURIComponent(citationElems["volume"])
+  } else {
+    OpenUrl += '&isbn='+encodeURIComponent(citationElems["isn"])
+  }
+
 	// Format variables from citation
 	if (format === "Journal" || format === "JournalFormat") { // Journals
         format = "Journal"
 		var article = citationElems["atitle"] ? citationElems["atitle"] + '.' : '',
-		    vol = citationElems["volume"] ? '(' + citationElems["volume"] + ')' : '',
-		    issue = citationElems["issue"] ? citationElems["issue"] + '.' : '',
-		    pages = citationElems["pages"] ? ' p.' + citationElems["pages"] + '.' : '',
 		    L="an electronic copy", A="1 &#8211; 3 days", O="article",
 		    resultsTable=$j("#JournalLinkTable"),
 		    authorName = citationElems["authorLast"] ? citationElems["authorLast"] : ''
@@ -194,22 +205,17 @@ function threeSixtyLinkReset(myjq) {
 		L="this item", A="1 &#8211; 2 weeks", O="item"
 	}
 	title = title || citationElems["title"]
-	date = date || citationElems["date"]? citationElems["date"] : ''
+	date = date || citationElems["date"]? citationElems["date"] : '-'
+  vol = citationElems["volume"] ? '(' + citationElems["volume"] + ')' : '-'
+  issue = citationElems["issue"] ? citationElems["issue"] + '.' : '-'
+  pages = citationElems["pages"] ? ' p.' + citationElems["pages"] + '.' : '-'
   authorName = authorName ? authorName : ''
   standardno = standardno || citationElems["isn"]
   titleEncode = encodeURIComponent(title)
   resultsTable = resultsTable || $j("#BookLinkTable")
-  doi = citationElems["doi"] ? citationElems["doi"] : 'NA'
-  pmid = citationElems["pmid"] ? citationElems["pmid"] : 'NA'
+  doi = citationElems["doi"] ? citationElems["doi"] : '-'
+  pmid = citationElems["pmid"] ? citationElems["pmid"] : '-'
   pmLink = pubmedLink(pmid)
-	// Build OpenURL for document delivery
-	var OpenUrl = 'sid=' + encodeURI(getQueryVariable('rfr_id')) + '&genre='+O+'&aulast='+encodeURI(citationElems["authorLast"])+'&aufirst='+encodeURI(citationElems["authorFirst"])+'&title='+encodeURI(title)+'&date='+encodeURI(citationElems["date"]);
-	if(format === "Journal" || format === "JournalFormat") {
-		OpenUrl += '&issn='+citationElems["isn"]+'&atitle='+encodeURI(citationElems["atitle"])+'&volume='+citationElems["volume"]+'&part=&issue='+citationElems["issue"];
-	} else {
-		OpenUrl += '&isbn='+citationElems["isn"]+''
-	}
-	OpenUrl += '&spage='+citationElems["pages"]+'&epage=';
 
 	var newPage = document.createElement('div');
 	newPage.id = 'link-reset-wrapper';
@@ -264,7 +270,7 @@ function threeSixtyLinkReset(myjq) {
     itemType = itemType === "article" ? "journal" : itemType
 	var listOpac = document.createElement("li")
 	listOpac.id = "next-step-opac"
-    
+
 	if(format === "Patent" || format === "PatentFormat") {
 		opacUrl = 'http://www.google.com/?tbm=pts#tbm=pts&q=';
 		searchLabel = 'Search Google Patents for this ';
@@ -274,21 +280,23 @@ function threeSixtyLinkReset(myjq) {
 
 	if(format !== 'Journal' && format !== 'JournalFormat') {
 		// Build consortial link for this item
-		var listConsortium = document.createElement('li');
-		listConsortium.innerHTML = '<a href="'+consortialUrl+titleEncode+'">Search '+consortialName+' for this '+O+'</a>'
+    if(typeof consortialUrl !== 'undefined') {
+		  var listConsortium = document.createElement('li');
+		  listConsortium.innerHTML = '<a href="'+consortialUrl+titleEncode+'">Search '+consortialName+' for this '+O+'</a>'
+    }
 	}
 
     var listIll = document.createElement('li')
     listIll.id = 'next-step-ill'
     var ill = $j('<a></a>').attr("href", illiadLink)
     ill = ill.text(illLabel)
-    ill = ill.attr("id", "illLink")
+    ill = ill.addClass("illLink")
 	listIll.innerHTML = "Not available? "
     $j(listIll).append(ill)
     var illfees = $j("<span class='ill-details'></span>")
     $j("<a/>").attr("href", illFeesUrl).text(illFeesLabel).appendTo(illfees)
     $j(listIll).append(illfees)
-    
+
     var listConsult = $j("<li/>")
     listConsult = listConsult.attr("id", "next-step-consult")
     listConsult.text(" to find similar " + O + "s")
@@ -296,11 +304,11 @@ function threeSixtyLinkReset(myjq) {
     consult.attr("href", consultServiceUrl)
     consult.text("Meet with a Research Librarian")
     listConsult.prepend(consult)
-    
+
     var listProblem = document.createElement('li')
     listProblem.innerHTML = ('Found a problem? ')
     listProblem.appendChild(problemReportLink(citationElems, reportLinkText))
-  
+
 	// Build the next steps list
 	var nextStepsList = document.createElement('div');
 	var nextStepsUl = document.createElement('ul');
@@ -450,9 +458,7 @@ function threeSixtyLinkReset(myjq) {
 		noResultsLink.appendChild(problemReportLink(citationElems, 'Report a problem'))
 		tmp.appendChild(noResultsLink)
 		noResultsLabel += tmp.innerHTML
-		noResultsButton = '',noResultsButtonLabel = ''
-		noResultsIll = document.createElement('div')
-		noResultsprc = document.createElement('div')
+		noResultsButton = '', noResultsButtonLabel = ''
 		resultsDiv.id = 'ContentNotAvailableTable';
 
 		// Build no results message
@@ -461,7 +467,7 @@ function threeSixtyLinkReset(myjq) {
 		noResultsMessage.innerHTML = noResultsLabel;
 		resultsDiv.appendChild(noResultsMessage);
 		if(format !== "Journal" && format !== "JournalFormat") {
-			resultsDiv.appendChild(noResultsButton);
+			//resultsDiv.appendChild(noResultsButton);
 		}
 
 	} // End no results
@@ -510,7 +516,7 @@ function threeSixtyLinkReset(myjq) {
 
 	var pairvalues = query.split("&")
 	if(pairvalues[0] !== "?SS_Page=refiner") { // Don't rewrite the citation form page.
-        
+
 		// Build the next steps list
 		nextStepsUl.appendChild(listIll)
         nextStepsUl.appendChild($j(listConsult).get(0))
@@ -608,5 +614,4 @@ function threeSixtyLinkReset(myjq) {
         }
          return link.get(0)
     }
-    
 }
