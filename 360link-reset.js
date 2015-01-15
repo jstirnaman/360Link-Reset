@@ -176,9 +176,6 @@ function threeSixtyLinkReset(myjq) {
 		    resultsTable=$j("#JournalLinkTable"),
 		    authorName = citationElems["authorLast"] ? citationElems["authorLast"] : ''
 		    authorName = citationElems["authorFirst"] ? authorName + ', ' + citationElems["authorFirst"] + '.' : authorName
-            doi = citationElems["doi"] ? citationElems["doi"] : 'NA',
-            pmid = citationElems["pmid"] ? citationElems["pmid"] : 'NA',
-            pmLink = pubmedLink(pmid)
 	}
 	if (format === "BookFormat" || format === "Book") { // Books
         format = "Book"
@@ -195,14 +192,16 @@ function threeSixtyLinkReset(myjq) {
 	if (format === "UnknownFormat" || format === "Unknown") { // Unknown Format
         format = "Unknown"
 		L="this item", A="1 &#8211; 2 weeks", O="item"
-	}	
+	}
 	title = title || citationElems["title"]
 	date = date || citationElems["date"]? citationElems["date"] : ''
-    authorName = authorName ? authorName : ''
-    standardno = standardno || citationElems["isn"]
-    titleEncode = encodeURIComponent(title)
-    resultsTable = resultsTable || $j("#BookLinkTable")
-    
+  authorName = authorName ? authorName : ''
+  standardno = standardno || citationElems["isn"]
+  titleEncode = encodeURIComponent(title)
+  resultsTable = resultsTable || $j("#BookLinkTable")
+  doi = citationElems["doi"] ? citationElems["doi"] : 'NA'
+  pmid = citationElems["pmid"] ? citationElems["pmid"] : 'NA'
+  pmLink = pubmedLink(pmid)
 	// Build OpenURL for document delivery
 	var OpenUrl = 'sid=' + encodeURI(getQueryVariable('rfr_id')) + '&genre='+O+'&aulast='+encodeURI(citationElems["authorLast"])+'&aufirst='+encodeURI(citationElems["authorFirst"])+'&title='+encodeURI(title)+'&date='+encodeURI(citationElems["date"]);
 	if(format === "Journal" || format === "JournalFormat") {
@@ -223,7 +222,7 @@ function threeSixtyLinkReset(myjq) {
 	citationDiv.id = 'citation';
 	citationDiv.setAttribute("itemscope", '')
 	citationDiv.setAttribute('itemtype', "http://schema.org/CreativeWork")
-    
+
     $j("<div/>").attr("id","citation-article").addClass("itemprop","headline").text(article).appendTo(citationDiv)
     var citationDetails = $j("<div/>")
         citationDetails = citationDetails.addClass("citation-details")
@@ -254,12 +253,11 @@ function threeSixtyLinkReset(myjq) {
 		refWorksChunk.innerHTML = '<a id="refworks" href="http://www.refworks.com/express/expressimport.asp?' + OpenUrl + '">Export to Refworks</a></div>';
 		citationDiv.appendChild(refWorksChunk);
 	} else {
-          $j(citationSrcDiv).append($j("span.SSALItemEmail"))
-          $j(citationSrcDiv).append($j("span.SSALItemExport"))
+          // Not sure these features work at all anymore.
+          //$j(citationSrcDiv).append($j("span.SSALItemEmail"))
+          //$j(citationSrcDiv).append($j("span.SSALItemExport"))
         }
     $j(citationDetails).append(citationSrcDiv)
-    
-
 
 	// Build list element for searching catalog or Google Patents
     var itemType = O
