@@ -58,7 +58,7 @@ function threeSixtyLinkReset(myjq) {
   // that handles the parameters.
 
 	// The troubleshooting email you'd like broken link reports to go to
-	var ermsEmail = '' //'ejournals@kumc.edu';
+	var ermsEmail = '' //'ejournals-at-k-you-emcee.edu';
 
   // The URL for own problem reporting form if you have one.
   // Example of query string that will be appended:
@@ -583,10 +583,10 @@ function threeSixtyLinkReset(myjq) {
         if(reportForm !== '') {
           href = reportForm + '?url=' + problemUrl
           //@TODO Change journal to title in the form and then change it here.
-          href += '&?journal=' + encodeURIComponent(citation["title"])
+          href += '&journal=' + encodeURIComponent(citation["title"])
           href += '&article=' + encodeURIComponent(citation["atitle"])
           href += '&year=' + encodeURIComponent(citation["date"])
-          href += '/' + encodeURIComponent(citation["volume"])
+          href += '&volume=' + encodeURIComponent(citation["volume"])
           href += '&url=' + encodeURIComponent(citation["artnum"])
         }
         link = $j('<a class="problem-report-link"/>')
